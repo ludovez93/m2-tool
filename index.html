@@ -432,6 +432,94 @@ textarea::placeholder{color:var(--w4)}
 
 
 
+
+
+/* ── MOBILE BREATHING ROOM ── */
+@media(max-width:768px){
+  /* More space overall */
+  .main{padding:74px 18px 90px}
+  .section{margin-bottom:20px}
+  .section-label{font-size:20px;margin-bottom:14px}
+
+  /* Input card: taller, more padding */
+  .input-card{border-radius:18px}
+  .input-header{padding:16px 18px}
+  .input-header-left{font-size:15px}
+  textarea{font-size:15px;line-height:2;min-height:220px;padding:16px 18px}
+
+  /* Buttons: bigger touch targets */
+  .action-row{gap:10px;margin-top:16px}
+  .btn-primary{padding:18px;font-size:17px;border-radius:16px;min-height:54px}
+  .btn-secondary{padding:18px;font-size:17px;border-radius:16px;min-height:54px}
+
+  /* Stats: 2 columns, more space */
+  .stats-bar{gap:10px}
+  .stat-card{padding:18px;border-radius:16px}
+  .stat-value{font-size:30px}
+  .stat-label{font-size:12px;margin-top:4px}
+
+  /* Results: more breathing room */
+  .result-list{border-radius:18px}
+  .result-row{padding:16px 18px;gap:12px}
+  .row-km{font-size:16px;width:85px}
+  .row-type{font-size:15px}
+  .row-tags{gap:6px;margin-top:4px}
+  .tag{font-size:10px;padding:4px 10px}
+
+  /* Difetti: bigger */
+  .difetto-card{border-radius:18px;margin-bottom:14px}
+  .difetto-header{padding:16px 18px}
+  .difetto-title{font-size:16px}
+  .difetto-row{padding:16px 18px;gap:14px}
+  .difetto-code{font-size:18px}
+  .difetto-info{font-size:14px}
+  .btn-pdf{padding:12px 18px;font-size:15px;border-radius:12px}
+
+  /* TSV */
+  .tsv-card{border-radius:18px}
+  .copy-btn{font-size:16px;padding:8px 0}
+
+  /* Empty */
+  .empty-state{padding:60px 20px}
+  .empty-icon{font-size:48px}
+  .empty-text{font-size:16px}
+
+  /* Scheda editor */
+  #scheda-editor .se-topbar{height:58px}
+  #scheda-editor .se-topbar-title{font-size:18px}
+  #scheda-editor .se-btn-pdf{padding:10px 18px;font-size:15px}
+  #scheda-editor .se-tabs{height:48px}
+  #scheda-editor .se-tab{font-size:14px}
+
+  /* Form: bigger inputs */
+  .se-form-page{padding:14px 18px 110px}
+  .fsection{border-radius:18px;margin-bottom:14px}
+  .fsection-head{padding:14px 18px;font-size:16px}
+  .fsection-body{padding:4px 18px 14px}
+  .fgroup{padding:12px 0}
+  .fgroup label{font-size:13px;margin-bottom:6px}
+  .fgroup input[type=text]{font-size:18px;padding:6px 0}
+
+  /* Pills: bigger for fingers */
+  .pill-group{gap:10px;padding:6px 0}
+  .pill{padding:12px 18px;font-size:15px;border-radius:12px;min-height:48px}
+  .pill-dot{width:16px;height:16px}
+
+  /* Signature */
+  .sig-canvas-wrap{border-radius:16px}
+  .sig-canvas-wrap canvas{height:180px}
+  .sig-actions{gap:10px;margin-top:10px}
+  .sig-btn{padding:14px;font-size:15px;border-radius:14px;min-height:50px}
+  .sig-saved{gap:10px;margin-top:10px}
+  .sig-saved-item{padding:14px 18px;border-radius:14px}
+  .sig-saved-item img{height:42px}
+  .sig-saved-item .sig-name{font-size:15px}
+
+  /* Tab bar */
+  .tabs-wrapper{padding:4px 0 calc(4px + env(safe-area-inset-bottom))}
+  .tab{min-height:54px;font-size:10px}
+  .tab::before{font-size:24px}
+}
 </style>
 </head>
 <body>
@@ -1178,7 +1266,10 @@ function generaPDF() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'scheda_m2_' + (document.getElementById('scheda_nr').value||'new') + '.pdf';
+    var _km=(document.getElementById('km').value||'').replace(/[^a-zA-Z0-9+.]/g,'_');
+    var _fila='';if(schedaState['fila_dx'])_fila='DX';if(schedaState['fila_sx'])_fila='SX';
+    var _cod=(document.getElementById('codice').value||'').replace(/[^a-zA-Z0-9]/g,'');
+    a.download=['scheda',_km,_fila,_cod].filter(Boolean).join('_')+'.pdf';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
