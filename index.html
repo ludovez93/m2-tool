@@ -492,7 +492,7 @@ textarea::placeholder{color:var(--w4)}
 }
 #scheda-editor.open{display:flex;animation:su 0.4s cubic-bezier(0.32,0.72,0,1)}
 @keyframes su{from{transform:translateY(100%)}to{transform:none}}
-#scheda-editor .se-topbar{position:relative;z-index:auto;height:auto;min-height:52px;background:#0a0a0a;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:12px 16px;padding-top:calc(12px + var(--sat));gap:12px}
+#scheda-editor .se-topbar{position:relative;z-index:auto;height:auto;min-height:52px;background:#0a0a0a;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:12px 16px 16px;padding-top:calc(14px + var(--sat));gap:12px}
 #scheda-editor .se-topbar-title{font-size:14px;font-weight:600;flex:1}
 #scheda-editor .se-topbar-logo{background:linear-gradient(135deg,var(--ac),var(--ac-dim));color:#fff;font-weight:700;font-size:12px;padding:4px 8px;border-radius:4px;letter-spacing:0.5px}
 #scheda-editor .se-btn-pdf{background:linear-gradient(135deg,var(--ac),var(--ac-dim));color:#fff;border:none;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;white-space:nowrap;box-shadow:0 2px 16px rgba(45,122,255,0.30)}
@@ -565,7 +565,7 @@ textarea::placeholder{color:var(--w4)}
 
 /* ══════════ MOBILE ══════════ */
 @media(max-width:768px){
-  .main{padding:50px 18px 50px;padding-top:calc(130px + var(--sat))}
+  .main{padding:50px 18px 50px;padding-top:calc(140px + var(--sat))}
   .section{margin-bottom:20px}
   .input-card{border-radius:22px}
   textarea{font-size:14px;line-height:2;min-height:240px;padding:18px}
@@ -588,7 +588,7 @@ textarea::placeholder{color:var(--w4)}
   .tsv-card{border-radius:18px}
   .empty-state{padding:60px 20px}
   .empty-text{font-size:16px}
-  #scheda-editor .se-topbar{height:auto;min-height:calc(58px + var(--sat))}
+  #scheda-editor .se-topbar{height:auto;min-height:calc(68px + var(--sat));padding-bottom:18px}
   #scheda-editor .se-topbar-title{font-size:18px}
   #scheda-editor .se-btn-pdf{padding:10px 18px;font-size:15px}
   #scheda-editor .se-tabs{height:48px}
