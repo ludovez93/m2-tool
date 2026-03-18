@@ -1356,10 +1356,13 @@ function generaPDF() {
   }
 
   const blob = doc.output('blob');
-  var _km=(document.getElementById('km').value||'').replace(/[^a-zA-Z0-9+.]/g,'_');
+  var _linea=(document.getElementById('linea').value||'').trim().replace(/[^a-zA-Z0-9À-ú ]/g,'').replace(/\s+/g,'_');
+  var _km=(document.getElementById('km').value||'').trim().replace(/[^a-zA-Z0-9+.]/g,'_');
+  var _bin='';if(schedaState['binario_unico'])_bin='Unico';if(schedaState['binario_pari'])_bin='Pari';if(schedaState['binario_dispari'])_bin='Dispari';
   var _fila='';if(schedaState['fila_dx'])_fila='DX';if(schedaState['fila_sx'])_fila='SX';
-  var _cod=(document.getElementById('codice').value||'').replace(/[^a-zA-Z0-9]/g,'');
-  var filename=['scheda',_km,_fila,_cod].filter(Boolean).join('_')+'.pdf';
+  var _cod=(document.getElementById('codice').value||'').trim().replace(/[^a-zA-Z0-9]/g,'');
+  var _tipo=_cod?_cod:'NODAC';
+  var filename=[_linea,_km,_bin,_fila,_tipo].filter(Boolean).join('_')+'.pdf';
 
   // PWA standalone (iOS/Android): usa Web Share API
   var isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
