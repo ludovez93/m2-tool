@@ -565,7 +565,7 @@ textarea::placeholder{color:var(--w4)}
 
 /* ══════════ MOBILE ══════════ */
 @media(max-width:768px){
-  .main{padding:116px 18px 50px}
+  .main{padding:50px 18px 50px;padding-top:calc(116px + var(--sat))}
   .section{margin-bottom:20px}
   .input-card{border-radius:22px}
   textarea{font-size:14px;line-height:2;min-height:240px;padding:18px}
@@ -588,7 +588,7 @@ textarea::placeholder{color:var(--w4)}
   .tsv-card{border-radius:18px}
   .empty-state{padding:60px 20px}
   .empty-text{font-size:16px}
-  #scheda-editor .se-topbar{height:58px}
+  #scheda-editor .se-topbar{height:auto;min-height:calc(58px + var(--sat))}
   #scheda-editor .se-topbar-title{font-size:18px}
   #scheda-editor .se-btn-pdf{padding:10px 18px;font-size:15px}
   #scheda-editor .se-tabs{height:48px}
