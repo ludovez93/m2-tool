@@ -1465,8 +1465,15 @@ function generaPDF() {
   var _fila = ''; if(schedaState['fila_dx']) _fila='DX'; if(schedaState['fila_sx']) _fila='SX';
   var _cod = (document.getElementById('codice').value||'').trim().replace(/[^a-zA-Z0-9.]/g,'');
   var _stato = '';
-  if (currentDifettoIdx !== null && saldature[currentDifettoIdx] && saldature[currentDifettoIdx].stato === 'nodac') _stato = 'NODAC';
+  if (currentDifettoIdx !== null && saldature[currentDifettoIdx]) {
+    var _s = saldature[currentDifettoIdx];
+    if (!_cod && _s.codice) _cod = _s.codice.replace(/[^a-zA-Z0-9.]/g,'');
+    if (_s.stato === 'nodac') _stato = 'NODAC';
+  }
   var _data = (document.getElementById('data_scheda').value||'').trim().replace(/\//g,'-');
+  if (!_data && currentDifettoIdx !== null && saldature[currentDifettoIdx] && saldature[currentDifettoIdx].data) {
+    _data = saldature[currentDifettoIdx].data.replace(/\//g,'-');
+  }
   var nomePdf = [_linea, _km, _fila, _cod ? _cod : _stato, _data].filter(Boolean).join('_') + '.pdf';
   if (nomePdf === '.pdf') nomePdf = 'Scheda_I1.pdf';
 
