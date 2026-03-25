@@ -826,6 +826,18 @@ document.querySelectorAll('.tab').forEach(t => {
 });
 
 // ── PARSING
+
+// Lista codici difetto ufficiali RFI
+const CODICI_DIFETTO = ['113','213','235','135.1','135.2','212.1','212.2','112.1','112.2','211','236','412','422','132.1','132.2','232.1','232.2','4112','4212','4213','411.1','411.2','421.1','421.2','421.3','471','211MO'];
+
+function trovaDifetto(testo) {
+  for (const cod of CODICI_DIFETTO) {
+    const escaped = cod.replace('.', '\\.');
+    if (new RegExp('\\b' + escaped + '\\b').test(testo)) return cod;
+  }
+  return null;
+}
+
 function parse(txt) {
   const righe = txt.split('\n').map(r => r.trim()).filter(Boolean);
   const out = [];
@@ -833,108 +845,266 @@ function parse(txt) {
   let operatoreDX = '', operatoreSX = '', operatoreGen = '';
 
   // Parole riservate che NON sono operatori
-  const RESERVED = /^(DX|SX|SI|NO|ALL|FINE|TOT|KM|DAC)$/i;
+  const RESERVED = /^(DX|SX|SI|NO|ALL|FINE|TOT|KM|DAC|GII|PARI|DISPARI|UNICO)$/i;
 
-  righe.forEach(r => {
-    // Data range "16-17/02/2026" → prima data
-    const mDataRange = r.match(/^(\d{1,2})[-–](\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/);
-    if (mDataRange) { data = mDataRange[1]+'/'+mDataRange[3]+'/'+mDataRange[4]; return; }
+  // Righe da ignorare
+  function isIgnorable(r) {
+    if (/^\d{1,3}$/.test(r)) return true; // totali: "40", "26"
+    if (/^\d+\s*(No\s*Dac|difett)/i.test(r)) return true; // "1 No Dac"
+    if (/^\d+[\.,]\d+\s*km/i.test(r)) return true; // "0.8 km"
+    if (/^https?:\/\//i.test(r)) return true; // link
+    if (/^ultima\s+saldatura/i.test(r)) return true;
+    if (/^fine\b/i.test(r)) return true;
+    return false;
+  }
+
+  for (let i = 0; i < righe.length; i++) {
+    const r = righe[i];
+
+    // Righe da ignorare
+    if (isIgnorable(r)) continue;
+
+    // Data range "16-17/02/2026" o "24-25/03" → prima data
+    const mDataRange = r.match(/^(\d{1,2})[-–](\d{1,2})[\/\-](\d{1,2})(?:[\/\-](\d{2,4}))?$/);
+    if (mDataRange) { data = mDataRange[1]+'/'+mDataRange[3]+'/'+(mDataRange[4]||''); continue; }
 
     // Data singola "17/02/2026"
     const rClean = r.replace(/^data\s*(controllo)?\s*[:;]?\s*/i,'').trim();
     const mData = rClean.match(/^(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})$/);
-    if (mData) { data = mData[1]; return; }
+    if (mData) { data = mData[1]; continue; }
+
+    // Binario: "Dispari", "Pari", "Unico"
+    if (/^(dispari|pari|unico)$/i.test(r)) { binario = r.trim().toUpperCase(); continue; }
 
     // Operatore esplicito "Operatore dx LP"
     const mOpDX = r.match(/^operatore\s+dx\s+(.+)$/i);
-    if (mOpDX) { operatoreDX = mOpDX[1].trim(); return; }
+    if (mOpDX) { operatoreDX = mOpDX[1].trim(); continue; }
     const mOpSX = r.match(/^operatore\s+sx\s+(.+)$/i);
-    if (mOpSX) { operatoreSX = mOpSX[1].trim(); return; }
+    if (mOpSX) { operatoreSX = mOpSX[1].trim(); continue; }
     const mOpGen = r.match(/^operatore\s+(.+)$/i);
-    if (mOpGen) { operatoreGen = mOpGen[1].trim(); return; }
+    if (mOpGen) { operatoreGen = mOpGen[1].trim(); continue; }
 
-    // Sigla operatore da sola nel mezzo lista: "CA", "LP" (2-5 lettere, non riservate)
-    if (/^[A-Z]{2,5}$/i.test(r) && !RESERVED.test(r)) { operatoreGen = r.trim().toUpperCase(); return; }
+    // Operatore senza "operatore": "DX CA" / "SX LP"
+    const mOpShort = r.match(/^(DX|SX)\s+([A-Z]{2,5})$/i);
+    if (mOpShort) {
+      if (mOpShort[1].toUpperCase() === 'DX') operatoreDX = mOpShort[2].toUpperCase();
+      else operatoreSX = mOpShort[2].toUpperCase();
+      continue;
+    }
+
+    // Sigla operatore da sola: "CA", "LP" (2-5 lettere, non riservate)
+    if (/^[A-Z]{2,5}$/i.test(r) && !RESERVED.test(r)) { operatoreGen = r.trim().toUpperCase(); continue; }
 
     // Metadati
-    if (/^strumento\s/i.test(r)) { strumento = r.replace(/^strumento\s*/i,'').trim(); return; }
-    if (/^binario\s/i.test(r)) { binario = r.replace(/^binario\s*/i,'').trim(); return; }
-    if (/^linea\s/i.test(r)) { linea = r.replace(/^linea\s+/i,'').trim(); return; }
-    if (/^tratta\s/i.test(r)) { tratta = r.replace(/^tratta\s+/i,'').trim(); return; }
+    if (/^strumento\s/i.test(r)) { strumento = r.replace(/^strumento\s*/i,'').trim(); continue; }
+    if (/^linea\s/i.test(r)) { linea = r.replace(/^linea\s+/i,'').trim(); continue; }
+    if (/^tratta\s/i.test(r)) { tratta = r.replace(/^tratta\s+/i,'').trim(); continue; }
 
-    // Riga saldatura "120+318 DX [resto]"
+    // Riga saldatura "120+318 DX [resto]" oppure "120+318 SX"
     const mSald = r.match(/^(\d+\+\d+)\s+(DX|SX)(.*)?$/i);
-    if (!mSald) return; // ignora "54", "Fine tot 30", "2.9 km" ecc.
+    if (!mSald) continue; // riga non riconosciuta, salta
 
     const km = mSald[1];
     const fila = mSald[2].toUpperCase();
     const resto = (mSald[3]||'').trim();
     const restoUp = resto.toUpperCase();
 
-    // Operatore per questa fila (DX/SX specifici, poi generico)
     const operatore = fila === 'DX'
       ? (operatoreDX || operatoreGen)
       : (operatoreSX || operatoreGen);
 
-    // Tipo saldatura
-    const isAll = /\bALL(UMINOTERMICA)?\b/.test(restoUp);
+    // Tipo saldatura (default scintillio)
+    const isAll = /\bALL(UMINOTERMICA)?\b/i.test(restoUp);
     const tipo = isAll ? 'Alluminotermica' : 'Scintillio';
 
-    // Data saldatura inline "16/01/2026" o "16/01/26"
+    // Data saldatura inline
     const mDataSald = resto.match(/(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})/);
     const dataSald = mDataSald ? mDataSald[1] : '';
 
-    // Rimuovo date dal resto per cercare codici a 4 cifre senza falsi positivi
     const restoSenzaDate = restoUp.replace(/(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})/g, '');
 
-    // Note
+    // Note dalla riga principale
     const note = [];
-    if (/\bC\b/.test(restoSenzaDate) && !/\bNO\s*DAC\b/.test(restoUp)) {
+    if (/\bC\b/.test(restoSenzaDate) && !/\bNO\s*DAC\b/i.test(restoUp)) {
       note.push('CONTROLLO E PULIZIA PARZIALE PER CHIAVARDA');
     }
     if (/\bNO\s*PUN[ZS]/i.test(restoUp)) note.push('NO PUNZONE');
-    if (/\bGII\b/.test(restoUp)) note.push('GII');
+    if (/\bGII\b/i.test(restoUp)) note.push('GII');
 
-    // Lista codici difetto ufficiali RFI
-    const CODICI_DIFETTO = ['113','213','235','135.1','135.2','212.1','212.2','112.1','112.2','211','236','412','422','132.1','132.2','232.1','232.2','4112','4212','4213','411.1','411.2','421.1','421.2','421.3','471','211MO'];
+    // Deviatoi e note speciali dalla riga principale
+    const mDev = resto.match(/\b([PT][\.\s]*DEV[\w\s]*?\d+\w*)/i);
+    if (mDev) note.push(mDev[0].trim());
+    const mParentesi = resto.match(/\(([^)]+)\)/);
+    if (mParentesi) note.push(mParentesi[1].trim());
+    if (/\bL50\b/i.test(restoUp)) note.push('L50');
+    if (/\bPS\b/.test(restoUp) && !/\bPERC\b/i.test(restoUp)) note.push('PS');
+    const mDevCode = restoUp.match(/\bD\d+[A-Z]?\b/);
+    if (mDevCode && !CODICI_DIFETTO.includes(mDevCode[0])) note.push(mDevCode[0]);
 
-    // Cerca codice difetto dalla lista ufficiale
-    function trovaDifetto(testo) {
-      // Prima prova codici con decimale (più specifici)
-      for (const cod of CODICI_DIFETTO) {
-        const escaped = cod.replace('.', '\\.');
-        if (new RegExp('\\b' + escaped + '\\b').test(testo)) return cod;
-      }
-      return null;
-    }
-
-    // Punzone: matricola + giorno + mese (es. "1049 3 26", "CGF 1049 3 26")
-    const mPunzone = resto.match(/\b(\d{3,4})\s+(\d{1,2})\s+(\d{1,2})\b/);
+    // Punzone: matricola [sigla_ditta] mese anno
+    const mPunzone = resto.match(/\b(\d{3,4})\s+(?:([A-Z]{2,4})\s+)?(\d{1,2})\s+(\d{2,4})\b/i);
     if (mPunzone && !CODICI_DIFETTO.includes(mPunzone[1])) {
-      note.push('PUNZONE ' + mPunzone[1] + ' ' + mPunzone[2] + '/' + mPunzone[3]);
+      let punz = 'PUNZONE ' + mPunzone[1];
+      if (mPunzone[2]) punz += ' ' + mPunzone[2].toUpperCase();
+      punz += ' ' + mPunzone[3] + '/' + mPunzone[4];
+      note.push(punz);
     }
 
-    // NO DAC → conforme SI, scheda difetto sì
-    if (/\bNO\s*DAC\b/i.test(restoUp)) {
-      const codDif = trovaDifetto(restoSenzaDate);
-      const mCl = restoSenzaDate.match(/\b([SAB]\d?)\b/i);
-      if (codDif) note.push('DIFETTO ' + codDif);
-      if (mCl) note.push(mCl[1].toUpperCase());
-      out.push({km,tipo,fila,data,dataSald,linea,tratta,binario,operatore,strumento,
-        stato:'nodac',codice:codDif||'',classif:mCl?mCl[1].toUpperCase():'',note:note.join(' - ')});
-      return;
+    // Difetto visivo sulla riga principale
+    if (/DIFETTO\s+VISIVO/i.test(restoUp)) {
+      const descDif = resto.match(/DIFETTO\s+VISIVO[\s\-]*(.*)/i);
+      note.push(descDif ? descDif[0].trim() : 'DIFETTO VISIVO');
     }
 
-    // Cerca codice difetto dalla lista ufficiale
-    const codDif = trovaDifetto(restoSenzaDate);
+    // Codice difetto e classificazione dalla riga principale
+    let codDif = trovaDifetto(restoSenzaDate);
+    let classif = '';
     const mCl = restoSenzaDate.match(/\b([SAB]\d?)\b/i);
-    if (codDif) note.push('DIFETTO ' + codDif);
-    if (mCl) note.push(mCl[1].toUpperCase());
+    if (mCl && mCl[1].length <= 2) classif = mCl[1].toUpperCase();
+    let isNodac = /\bNO\s*DAC\b/i.test(restoUp);
 
-    const stato = codDif ? 'diff' : 'ok';
-    out.push({km,tipo,fila,data,dataSald,linea,tratta,binario,operatore,strumento,
-      stato,codice:codDif||'',classif:mCl?mCl[1]:'',note:note.join(' - ')});
-  });
+    // Dati extra per scheda I.1 (dalle righe figlie)
+    const extra = {};
+
+    // ── RIGHE FIGLIE: leggi avanti finché non trovi una nuova saldatura o metadato ──
+    while (i + 1 < righe.length) {
+      const next = righe[i + 1].trim();
+      if (!next) { i++; continue; }
+      const nextUp = next.toUpperCase();
+
+      // Se è una nuova saldatura, fermati
+      if (/^\d+\+\d+\s+(DX|SX)/i.test(next)) break;
+      // Se è un metadato globale, fermati
+      if (/^(dispari|pari|unico)$/i.test(next)) break;
+      if (/^(\d{1,2})[-–](\d{1,2})[\/\-](\d{1,2})/i.test(next)) break;
+      if (/^(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})$/i.test(next)) break;
+      if (/^operatore\s/i.test(next)) break;
+      if (/^(DX|SX)\s+[A-Z]{2,5}$/i.test(next)) break;
+      if (/^[A-Z]{2,5}$/i.test(next) && !RESERVED.test(next) && !CODICI_DIFETTO.includes(next)) break;
+      if (/^(strumento|linea|tratta)\s/i.test(next)) break;
+      // Riga ignorabile
+      if (isIgnorable(next)) { i++; continue; }
+
+      // È una riga figlia → consuma
+      i++;
+
+      // Codice difetto + NO DAC o classificazione su riga separata (es. "4212 NO DAC", "4212 S2", "4211 B")
+      const mCodRiga = next.match(/^(\d{3,4}(?:\.\d)?)\s*(.*)/);
+      if (mCodRiga && CODICI_DIFETTO.includes(mCodRiga[1])) {
+        codDif = mCodRiga[1];
+        const restoCod = mCodRiga[2].toUpperCase();
+        if (/\bNO\s*DAC\b/i.test(restoCod)) isNodac = true;
+        const mClFiglia = restoCod.match(/\b([SAB]\d?)\b/i);
+        if (mClFiglia) classif = mClFiglia[1].toUpperCase();
+        // Angolo sonda sulla stessa riga: "4212 S2 45 53.8"
+        const mSondaDB = restoCod.match(/\b(0|45|70)\b\s+(\d+[\.,]?\d*)/);
+        if (mSondaDB) {
+          const ang = mSondaDB[1];
+          extra.sonda = ang === '0' ? 'P20-2' : ang === '45' ? 'FTA45-2' : 'FTA70-2';
+          extra.guadagno = mSondaDB[2].replace(',','.');
+        }
+        // TR e DB sulla stessa riga: "4212 TR db 47.8 NO DAC"
+        const mTRDB = restoCod.match(/TR\s+(\d+)\s+DB\s+(\d+[\.,]?\d*)/i);
+        if (mTRDB) {
+          const ang = mTRDB[1];
+          extra.sonda = ang === '0' ? 'P20-2' : ang === '45' ? 'FTA45-2' : ang === '70' ? 'FTA70-2' : '';
+          extra.guadagno = mTRDB[2].replace(',','.');
+        }
+        const mDBsolo = restoCod.match(/\bDB\s+(\d+[\.,]?\d*)/i);
+        if (mDBsolo && !mTRDB && !mSondaDB) extra.guadagno = mDBsolo[1].replace(',','.');
+        continue;
+      }
+
+      // PERC / Perc / Percorso
+      const mPerc = next.match(/^perc(?:orso)?\s+(\d+[\.,]?\d*)/i);
+      if (mPerc) { extra.w = mPerc[1].replace(',','.'); continue; }
+      const mPerc1 = next.match(/^percorso\s+1\s+(\d+[\.,]?\d*)/i);
+      if (mPerc1) { extra.w1 = mPerc1[1].replace(',','.'); continue; }
+      const mPerc2 = next.match(/^percorso\s+2\s+(\d+[\.,]?\d*)/i);
+      if (mPerc2) { extra.w2 = mPerc2[1].replace(',','.'); continue; }
+
+      // PROF / Prof / Prod (typo)
+      const mProf = next.match(/^pro[fd]\s+(\d+[\.,]?\d*)/i);
+      if (mProf) { extra.prof_fess = mProf[1].replace(',','.'); continue; }
+
+      // HS / Hs → ampiezza
+      const mHs = next.match(/^hs\s+(\d+[\.,]?\d*)\s*%?/i);
+      if (mHs) { extra.ampiezza = mHs[1].replace(',','.'); continue; }
+
+      // H1 / H2 → ignora
+      if (/^h[12]\s/i.test(next)) continue;
+
+      // Scostamento
+      const mScost = next.match(/^scostamento\s+(\d+[\.,]?\d*)/i);
+      if (mScost) { extra.scost = mScost[1].replace(',','.'); continue; }
+
+      // DB / Db → guadagno
+      const mDB = next.match(/^db\s+(\d+[\.,]?\d*)/i);
+      if (mDB) { extra.guadagno = mDB[1].replace(',','.'); continue; }
+
+      // TR + angolo + DB sulla stessa riga: "TR 45 DB 48.2"
+      const mTR = next.match(/^tr\s+(\d+)\s+db\s+(\d+[\.,]?\d*)/i);
+      if (mTR) {
+        const ang = mTR[1];
+        extra.sonda = ang === '0' ? 'P20-2' : ang === '45' ? 'FTA45-2' : ang === '70' ? 'FTA70-2' : '';
+        extra.guadagno = mTR[2].replace(',','.');
+        continue;
+      }
+
+      // Angolo sonda solo: "45 TR 44.2" (ordine invertito)
+      const mAngTR = next.match(/^(0|45|70)\s+tr\s+(\d+[\.,]?\d*)/i);
+      if (mAngTR) {
+        const ang = mAngTR[1];
+        extra.sonda = ang === '0' ? 'P20-2' : ang === '45' ? 'FTA45-2' : ang === '70' ? 'FTA70-2' : '';
+        extra.guadagno = mAngTR[2].replace(',','.');
+        continue;
+      }
+
+      // Palo
+      const mPalo = next.match(/^palo\s+(.+)/i);
+      if (mPalo) { extra.palo_te = mPalo[1].trim(); continue; }
+
+      // Percentuale: "5% percentuale" o "percentuale 5%"
+      const mPct = next.match(/(\d+[\.,]?\d*)\s*%\s*percentuale/i) || next.match(/^percentuale\s+(\d+[\.,]?\d*)/i);
+      if (mPct) { extra.percent = mPct[1].replace(',','.'); continue; }
+
+      // Piano di Steccatura / P.S.I / P. S. I → sede tecnica
+      if (/^(piano\s+di\s+steccatura|p[\.\s]*s[\.\s]*i)\b/i.test(next)) {
+        extra.sede = next.trim();
+        continue;
+      }
+
+      // Galleria + nome → tratta
+      const mGall = next.match(/^galleria\s+(.+)/i);
+      if (mGall) { extra.tratta = next.trim(); continue; }
+
+      // Difetto visivo
+      if (/^difetto\s+visivo/i.test(next)) {
+        note.push(next.trim());
+        extra.osservazioni = next.trim();
+        continue;
+      }
+
+      // Lato intervia → ignora
+      if (/^lato\s+intervia/i.test(next)) continue;
+
+      // Qualsiasi altra riga figlia non riconosciuta → metti nelle note
+      note.push(next.trim());
+    }
+
+    // Costruisci note finali con dati extra
+    if (codDif && !note.some(n => n.startsWith('DIFETTO'))) note.push('DIFETTO ' + codDif);
+    if (classif && !note.some(n => /^[SAB]\d?$/.test(n))) note.push(classif);
+
+    // Determina stato finale
+    let stato;
+    if (isNodac) stato = 'nodac';
+    else if (codDif || /DIFETTO\s+VISIVO/i.test(note.join(' '))) stato = 'diff';
+    else stato = 'ok';
+
+    out.push({km, tipo, fila, data, dataSald, linea, tratta: extra.tratta||tratta, binario, operatore, strumento,
+      stato, codice: codDif||'', classif, note: note.join(' - '), extra});
+  }
   return out;
 }
 
@@ -1063,13 +1233,26 @@ function apriModal(idx) {
   
   // Pre-fill fields from parsed data
   const setVal = (id, val) => { const el = document.getElementById(id); if(el) el.value = val||''; };
+  const ex = s.extra || {};
   setVal('linea', s.linea||'');
-  setVal('tratta', s.tratta||'');
+  setVal('tratta', ex.tratta||s.tratta||'');
   setVal('km', s.km||'');
   setVal('data_scheda', s.data||'');
   setVal('codice', s.codice||'');
+  setVal('classif', s.classif||'');
   setVal('firma', s.operatore||'');
-  setVal('note', s.tipo==='Alluminotermica'?'SALDATURA ALLUMINOTERMICA':s.tipo==='Scintillio'?'SALDATURA A SCINTILLIO':'');
+  setVal('note', ex.osservazioni||(s.tipo==='Alluminotermica'?'SALDATURA ALLUMINOTERMICA':s.tipo==='Scintillio'?'SALDATURA A SCINTILLIO':''));
+  setVal('sede', ex.sede||'');
+  setVal('w', ex.w||'');
+  setVal('w1', ex.w1||'');
+  setVal('w2', ex.w2||'');
+  setVal('prof_fess', ex.prof_fess||'');
+  setVal('ampiezza', ex.ampiezza||'');
+  setVal('guadagno', ex.guadagno||'');
+  setVal('sonda', ex.sonda||'');
+  setVal('scost', ex.scost||'');
+  setVal('percent', ex.percent||'');
+  setVal('palo_te', ex.palo_te||'');
   
   // Reset pills
   document.querySelectorAll('#scheda-editor .pill').forEach(p => {
