@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#000000">
@@ -28,6 +28,7 @@ html{padding:env(safe-area-inset-top) env(safe-area-inset-right) 0 env(safe-area
 html,body{background:var(--bg);color:var(--w);font-family:-apple-system,'DM Sans',system-ui,sans-serif;font-size:16px;min-height:100vh;-webkit-text-size-adjust:100%;overscroll-behavior:none}
 *{-webkit-overflow-scrolling:touch;scroll-behavior:smooth}
 input,textarea,select{font-size:16px}
+input,textarea,select,button,.btn-primary,.btn-secondary,.tab,.pill,.sig-btn,.copy-btn,.clear-btn,.btn-pdf,.se-btn-pdf,.se-tab{touch-action:manipulation}
 ::-webkit-scrollbar{width:0;height:0}
 
 /* Ambient glow */
@@ -76,7 +77,7 @@ html::after{content:'M2';position:fixed;top:50%;left:50%;transform:translate(-50
 .input-header-left{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--w2)}
 .input-dot{width:8px;height:8px;border-radius:50%;background:var(--ac);box-shadow:0 0 8px rgba(10,132,255,0.4)}
 .clear-btn{font-size:15px;color:var(--ac);background:none;border:none;cursor:pointer;font-family:inherit;padding:4px 0}
-textarea{width:100%;background:transparent;border:none;color:var(--w2);font-family:'DM Mono',monospace;font-size:14px;line-height:1.9;padding:14px 16px;resize:none;outline:none;min-height:200px}
+textarea{width:100%;background:transparent;border:none;color:var(--w2);font-family:'DM Mono',monospace;font-size:16px;line-height:1.9;padding:14px 16px;resize:none;outline:none;min-height:200px}
 textarea::placeholder{color:var(--w4)}
 
 /* ── BUTTONS ── */
@@ -445,7 +446,7 @@ textarea::placeholder{color:var(--w4)}
   .input-card{border-radius:18px}
   .input-header{padding:16px 18px}
   .input-header-left{font-size:15px}
-  textarea{font-size:15px;line-height:2;min-height:220px;padding:16px 18px}
+  textarea{font-size:16px;line-height:2;min-height:220px;padding:16px 18px}
 
   /* Buttons: bigger touch targets */
   .action-row{gap:10px;margin-top:16px}
