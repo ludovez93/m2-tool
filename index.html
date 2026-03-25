@@ -76,7 +76,8 @@ input,textarea,select,button,.btn-primary,.btn-secondary,.tab,.pill,.sig-btn,.co
 .input-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:16px;overflow:hidden;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
 .input-header{padding:14px 16px;border-bottom:1px solid var(--sep);display:flex;align-items:center;justify-content:space-between}
 .input-header-left{display:flex;align-items:center;gap:8px;font-size:15px;color:var(--w2)}
-.input-dot{width:8px;height:8px;border-radius:50%;background:var(--ac)}
+.input-dot{width:8px;height:8px;border-radius:50%;background:var(--ac);animation:pulse 3s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:0.4;box-shadow:0 0 4px rgba(10,132,255,0.2)}50%{opacity:1;box-shadow:0 0 10px rgba(10,132,255,0.5)}}
 .clear-btn{font-size:15px;color:var(--ac);background:none;border:none;cursor:pointer;font-family:inherit;padding:4px 0}
 textarea{width:100%;background:transparent;border:none;color:var(--w2);font-family:'DM Mono',monospace;font-size:16px;line-height:1.9;padding:14px 16px;resize:none;outline:none;min-height:200px}
 textarea::placeholder{color:var(--w4)}
@@ -90,7 +91,8 @@ textarea::placeholder{color:var(--w4)}
 
 /* ── STATS ── */
 .stats-bar{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-.stat-card{padding:18px;background:var(--glass);border:1px solid var(--glass-border);border-radius:16px;display:flex;flex-direction:column;gap:6px;border-left:3px solid var(--s3);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+.stat-card{padding:18px;background:var(--glass);border:1px solid var(--glass-border);border-radius:16px;display:flex;flex-direction:column;gap:6px;border-left:3px solid var(--s3);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);animation:scaleIn 0.3s ease both}
+@keyframes scaleIn{from{opacity:0;transform:scale(0.95)}to{opacity:1;transform:none}}
 .stat-card.ok{background:var(--gn-bg);border-left-color:var(--gn)}
 .stat-card.ok .stat-value{color:var(--gn)}
 .stat-card.danger{background:var(--rd-bg);border-left-color:var(--rd)}
@@ -102,7 +104,8 @@ textarea::placeholder{color:var(--w4)}
 
 /* ── RESULTS ── */
 .result-list{display:flex;flex-direction:column;gap:0;background:var(--glass);border:1px solid var(--glass-border);border-radius:16px;overflow:hidden;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
-.result-row{background:transparent;border:none;border-radius:0;padding:14px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--sep);min-height:auto}
+.result-row{background:transparent;border:none;border-radius:0;padding:14px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--sep);min-height:auto;animation:slideIn 0.3s ease both}
+@keyframes slideIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:none}}
 .result-row:last-child{border-bottom:none}
 .result-row:active{background:rgba(255,255,255,0.02)}
 .result-row.has-defect{background:var(--rd-bg);border-left:3px solid var(--rd)}
@@ -121,7 +124,8 @@ textarea::placeholder{color:var(--w4)}
 .difetto-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:16px;overflow:hidden;margin-bottom:12px;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
 .difetto-header{padding:14px 16px;background:var(--rd-bg);border-bottom:1px solid var(--sep)}
 .difetto-title{font-size:16px;font-weight:700;color:var(--rd);display:flex;align-items:center;gap:8px}
-.difetto-title::before{content:'';width:6px;height:6px;background:var(--rd);border-radius:50%;flex-shrink:0}
+.difetto-title::before{content:'';width:6px;height:6px;background:var(--rd);border-radius:50%;flex-shrink:0;animation:pulseDanger 2s ease-in-out infinite}
+@keyframes pulseDanger{0%,100%{box-shadow:0 0 4px rgba(255,69,58,0.3)}50%{box-shadow:0 0 10px rgba(255,69,58,0.6)}}
 .difetto-list{padding:0}
 .difetto-row{padding:14px 16px;border-radius:0;background:transparent;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--sep)}
 .difetto-row:last-child{border-bottom:none}
@@ -933,7 +937,7 @@ function aggiornaUI() {
   else rl.innerHTML = saldature.map((s,i)=>{
     const cls=s.stato==='diff'?'has-defect':s.stato==='nodac'?'has-nodac':'';
     const tStato=s.stato==='ok'?'<span class="tag tag-ok">OK</span>':s.stato==='nodac'?'<span class="tag tag-nodac">NO DAC</span>':`<span class="tag tag-diff">${s.codice}</span>`;
-    return `<div class="result-row ${cls}"><span class="row-index">${String(i+1).padStart(2,'0')}</span><span class="row-km">${s.km}</span><span class="row-type">${s.tipo}</span><div class="row-tags">${s.fila?`<span class="tag tag-bin">${s.fila}</span>`:''}${tStato}</div></div>`;
+    return `<div class="result-row ${cls}" style="animation-delay:${i*0.03}s"><span class="row-index">${String(i+1).padStart(2,'0')}</span><span class="row-km">${s.km}</span><span class="row-type">${s.tipo}</span><div class="row-tags">${s.fila?`<span class="tag tag-bin">${s.fila}</span>`:''}${tStato}</div></div>`;
   }).join('');
 
   generaTSV();
