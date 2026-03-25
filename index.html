@@ -1093,7 +1093,11 @@ function parse(txt) {
     }
 
     // Costruisci note finali con dati extra
-    if (codDif && !note.some(n => n.startsWith('DIFETTO'))) note.push('DIFETTO ' + codDif);
+    if (isNodac) {
+      note.push(codDif ? 'NO DAC ' + codDif : 'NO DAC');
+    } else if (codDif && !note.some(n => n.startsWith('DIFETTO'))) {
+      note.push('DIFETTO ' + codDif);
+    }
     if (classif && !note.some(n => /^[SAB]\d?$/.test(n))) note.push(classif);
 
     // Determina stato finale
