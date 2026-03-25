@@ -384,7 +384,6 @@ textarea::placeholder{color:var(--w4)}
       <div class="se-topbar-title" id="se-title">Scheda I.1</div>
       <div class="se-topbar-sub">DPR MO SE 01 1 0</div>
     </div>
-    <button class="se-btn-pdf" onclick="generaPDF()">PDF ↓</button>
     <button onclick="chiudiScheda()" style="width:30px;height:30px;background:var(--s2);border:none;border-radius:50%;color:var(--w3);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center">×</button>
   </div>
   <div class="se-tabs">
@@ -574,6 +573,11 @@ textarea::placeholder{color:var(--w4)}
       <div class="sig-saved" id="sig-saved-list"></div>
     </div>
   </div>
+
+  <div style="padding:0 16px 24px">
+    <button class="btn-primary" onclick="generaPDF()" style="width:100%;font-size:17px">Scarica PDF</button>
+  </div>
+
 </div><!-- /form page -->
 <!-- PREVIEW PAGE -->
 <div class="se-page se-preview-page" id="se-page-preview">
