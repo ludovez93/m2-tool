@@ -1001,6 +1001,7 @@ function parse(txt) {
         if (mSondaDB) {
           const ang = mSondaDB[1];
           extra.sonda = ang === '0' ? 'P20-2' : ang === '45' ? 'FTA45-2' : 'FTA70-2';
+          extra.fondo_scala = ang === '70' ? '150' : '250';
           extra.guadagno = mSondaDB[2].replace(',','.');
         }
         // TR e DB sulla stessa riga: "4212 TR db 47.8 NO DAC"
@@ -1008,6 +1009,7 @@ function parse(txt) {
         if (mTRDB) {
           const ang = mTRDB[1];
           extra.sonda = ang === '0' ? 'P20-2' : ang === '45' ? 'FTA45-2' : ang === '70' ? 'FTA70-2' : '';
+          if (ang === '0' || ang === '45' || ang === '70') extra.fondo_scala = ang === '70' ? '150' : '250';
           extra.guadagno = mTRDB[2].replace(',','.');
         }
         const mDBsolo = restoCod.match(/\bDB\s+(\d+[\.,]?\d*)/i);
@@ -1254,6 +1256,7 @@ function apriModal(idx) {
   setVal('ampiezza', ex.ampiezza||'');
   setVal('guadagno', ex.guadagno||'');
   setVal('sonda', ex.sonda||'');
+  setVal('fondo_scala', ex.fondo_scala||'');
   setVal('scost', ex.scost||'');
   setVal('percent', ex.percent||'');
   setVal('palo_te', ex.palo_te||'');
