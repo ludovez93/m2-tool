@@ -915,19 +915,19 @@ function parse(txt) {
     }
 
     // NO DAC → conforme SI, scheda difetto sì
-    if (/\bNO\s*DAC\b/.test(restoUp)) {
+    if (/\bNO\s*DAC\b/i.test(restoUp)) {
       const codDif = trovaDifetto(restoSenzaDate);
-      const mCl = restoSenzaDate.match(/\b(S\d)\b/i);
+      const mCl = restoSenzaDate.match(/\b([SAB]\d?)\b/i);
       if (codDif) note.push('DIFETTO ' + codDif);
       if (mCl) note.push(mCl[1].toUpperCase());
       out.push({km,tipo,fila,data,dataSald,linea,tratta,binario,operatore,strumento,
-        stato:'nodac',codice:codDif||'',classif:mCl?mCl[1]:'',note:note.join(' - ')});
+        stato:'nodac',codice:codDif||'',classif:mCl?mCl[1].toUpperCase():'',note:note.join(' - ')});
       return;
     }
 
     // Cerca codice difetto dalla lista ufficiale
     const codDif = trovaDifetto(restoSenzaDate);
-    const mCl = restoSenzaDate.match(/\b(S\d)\b/i);
+    const mCl = restoSenzaDate.match(/\b([SAB]\d?)\b/i);
     if (codDif) note.push('DIFETTO ' + codDif);
     if (mCl) note.push(mCl[1].toUpperCase());
 
