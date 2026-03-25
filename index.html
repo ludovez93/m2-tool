@@ -37,15 +37,6 @@ input,textarea,select{font-size:16px}
 input,textarea,select,button,.btn-primary,.btn-secondary,.tab,.pill,.sig-btn,.copy-btn,.clear-btn,.btn-pdf,.se-btn-pdf,.se-tab{touch-action:manipulation}
 ::-webkit-scrollbar{width:0;height:0}
 
-/* Ambient glow */
-body::before{content:'';position:fixed;top:0;left:0;right:0;height:300px;z-index:0;pointer-events:none;background:radial-gradient(ellipse at 50% 0%,rgba(10,132,255,0.05),transparent 70%);animation:ag 12s ease-in-out infinite alternate}
-@keyframes ag{0%{opacity:0.4}100%{opacity:0.8}}
-
-/* Splash */
-html::before{content:'';position:fixed;inset:0;z-index:9999;background:#000;animation:so 0.4s 1.6s forwards;pointer-events:none}
-html::after{content:'M2';position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:10000;font-size:44px;font-weight:800;letter-spacing:8px;color:var(--ac);text-shadow:0 0 40px rgba(10,132,255,0.4);animation:sl 1.8s ease-out forwards;pointer-events:none}
-@keyframes sl{0%{opacity:0;transform:translate(-50%,-50%) scale(0.8)}20%{opacity:1;transform:translate(-50%,-50%)}70%{opacity:1}100%{opacity:0}}
-@keyframes so{to{opacity:0;visibility:hidden}}
 
 /* ── TOPBAR ── */
 .topbar{height:56px;padding:0 16px;position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(0,0,0,0.88);backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);border-bottom:1px solid var(--sep);display:flex;align-items:center;gap:10px}
@@ -58,15 +49,12 @@ html::after{content:'M2';position:fixed;top:50%;left:50%;transform:translate(-50
 /* ── TABS: bottom ── */
 .tabs-wrapper{position:fixed;bottom:0;left:0;right:0;z-index:100;top:auto;padding:2px 0 calc(2px + env(safe-area-inset-bottom));background:rgba(0,0,0,0.88);backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);border-top:1px solid var(--sep);border-bottom:none;display:flex}
 .tab{flex:1;padding:4px 0 2px;font-size:11px;font-weight:600;min-height:50px;color:var(--w3);border:none;border-bottom:none;border-radius:0;margin:0;background:transparent;cursor:pointer;user-select:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;transition:color 0.2s;letter-spacing:0.2px;text-transform:none}
-.tab::before{font-size:22px;display:block;line-height:1}
-.tab:nth-child(1)::before{content:'📋'}
-.tab:nth-child(2)::before{content:'📊'}
-.tab:nth-child(3)::before{content:'⚠️'}
+.tab-icon{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
 .tab.active{color:var(--ac)}
 .tab:active{opacity:0.5}
 .tab-count{font-family:'DM Mono',monospace;font-size:10px;padding:2px 6px;border-radius:8px;font-weight:600;background:var(--s2);color:var(--w3);border:none}
 .tab.active .tab-count{background:var(--acbg);color:var(--ac)}
-.tc-danger{background:rgba(255,69,58,0.1);color:var(--rd)}
+.tc-danger{background:var(--rd-bg);color:var(--rd)}
 
 /* ── MAIN ── */
 .main{padding:68px 16px 80px;max-width:100%;position:relative;z-index:1}
@@ -316,9 +304,9 @@ textarea::placeholder{color:var(--w4)}
 </div>
 
 <div class="tabs-wrapper">
-  <div class="tab active" data-tab="0">Compila <span class="tab-count" id="tc0">—</span></div>
-  <div class="tab" data-tab="1">Risultati <span class="tab-count" id="tc1">0</span></div>
-  <div class="tab" data-tab="2">Difetti <span class="tab-count tc-danger" id="tc2">0</span></div>
+  <div class="tab active" data-tab="0"><svg class="tab-icon" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Compila</div>
+  <div class="tab" data-tab="1"><svg class="tab-icon" viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>Risultati <span class="tab-count" id="tc1">0</span></div>
+  <div class="tab" data-tab="2"><svg class="tab-icon" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Difetti <span class="tab-count tc-danger" id="tc2">0</span></div>
 </div>
 
 <div class="main">
