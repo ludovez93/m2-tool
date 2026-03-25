@@ -72,8 +72,37 @@ input,textarea,select,button,.btn-primary,.btn-secondary,.tab,.pill,.sig-btn,.co
 .tab-panel.active{display:block;animation:fadeIn 0.4s ease}
 @keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 
+/* ── COMPILA HERO ── */
+.compila-hero{position:relative;background:linear-gradient(135deg,rgba(10,132,255,0.08) 0%,rgba(10,132,255,0.02) 40%,rgba(48,209,88,0.04) 100%);border:1px solid var(--glass-border);border-radius:20px;padding:24px 20px;margin-bottom:16px;overflow:hidden;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+.compila-hero::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:conic-gradient(from 0deg at 50% 50%,transparent 0deg,rgba(10,132,255,0.06) 60deg,transparent 120deg,rgba(48,209,88,0.04) 180deg,transparent 240deg,rgba(10,132,255,0.06) 300deg,transparent 360deg);animation:heroRotate 12s linear infinite;pointer-events:none}
+@keyframes heroRotate{to{transform:rotate(360deg)}}
+.compila-hero::after{content:'';position:absolute;inset:1px;background:linear-gradient(135deg,rgba(3,3,5,0.95),rgba(6,6,15,0.9));border-radius:19px;pointer-events:none}
+.compila-hero>*{position:relative;z-index:1}
+.hero-status{display:flex;align-items:center;gap:8px;margin-bottom:16px}
+.hero-status-dot{width:6px;height:6px;border-radius:50%;background:var(--gn);box-shadow:0 0 8px rgba(48,209,88,0.5);animation:statusPulse 2s ease-in-out infinite}
+@keyframes statusPulse{0%,100%{opacity:0.6;box-shadow:0 0 4px rgba(48,209,88,0.3)}50%{opacity:1;box-shadow:0 0 12px rgba(48,209,88,0.6)}}
+.hero-status-text{font-size:11px;font-weight:600;color:var(--gn);text-transform:uppercase;letter-spacing:1.2px}
+.hero-title{font-size:26px;font-weight:800;letter-spacing:-0.5px;line-height:1.2;margin-bottom:6px;background:linear-gradient(135deg,#fff 0%,#b0b0b0 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-subtitle{font-size:14px;color:var(--w3);line-height:1.5}
+
+/* ── FLOW STEPS ── */
+.flow-steps{display:flex;align-items:center;gap:0;margin-bottom:20px;padding:0 4px}
+.flow-step{display:flex;align-items:center;gap:8px;flex:1}
+.flow-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:12px;font-weight:700;background:var(--s2);color:var(--w3);border:1.5px solid var(--card-border);transition:all 0.4s;flex-shrink:0}
+.flow-step.active .flow-num{background:var(--acbg);color:var(--ac);border-color:rgba(10,132,255,0.4);box-shadow:0 0 12px rgba(10,132,255,0.2)}
+.flow-step.done .flow-num{background:var(--gn-bg);color:var(--gn);border-color:rgba(48,209,88,0.3)}
+.flow-label{font-size:12px;font-weight:600;color:var(--w4);transition:color 0.3s;white-space:nowrap}
+.flow-step.active .flow-label{color:var(--w2)}
+.flow-step.done .flow-label{color:var(--gn)}
+.flow-line{flex:0 0 auto;width:20px;height:1.5px;background:var(--s3);margin:0 2px;position:relative;overflow:hidden}
+.flow-line::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,var(--ac),var(--gn));transform:scaleX(0);transform-origin:left;transition:transform 0.6s ease}
+.flow-line.lit::after{transform:scaleX(1)}
+
 /* ── INPUT CARD ── */
-.input-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:16px;overflow:hidden;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+.input-card{position:relative;background:var(--glass);border:1px solid var(--glass-border);border-radius:16px;overflow:hidden;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);transition:border-color 0.3s}
+.input-card:focus-within{border-color:rgba(10,132,255,0.3);box-shadow:0 0 30px rgba(10,132,255,0.06)}
+.input-card::before{content:'';position:absolute;top:0;left:-100%;width:50%;height:1px;background:linear-gradient(90deg,transparent,rgba(10,132,255,0.5),transparent);animation:scanLine 4s ease-in-out infinite;pointer-events:none;z-index:2}
+@keyframes scanLine{0%{left:-50%}100%{left:150%}}
 .input-header{padding:14px 16px;border-bottom:1px solid var(--sep);display:flex;align-items:center;justify-content:space-between}
 .input-header-left{display:flex;align-items:center;gap:8px;font-size:15px;color:var(--w2)}
 .input-dot{width:8px;height:8px;border-radius:50%;background:var(--ac);animation:pulse 3s ease-in-out infinite}
@@ -82,13 +111,29 @@ input,textarea,select,button,.btn-primary,.btn-secondary,.tab,.pill,.sig-btn,.co
 .clear-btn:active{transform:scale(0.95)}
 textarea{width:100%;background:transparent;border:none;color:var(--w2);font-family:'DM Mono',monospace;font-size:16px;line-height:1.9;padding:14px 16px;resize:none;outline:none;min-height:200px}
 textarea::placeholder{color:var(--w4)}
+.input-footer{padding:10px 16px;border-top:1px solid var(--sep);display:flex;align-items:center;justify-content:space-between}
+.char-counter{font-family:'DM Mono',monospace;font-size:11px;color:var(--w4);transition:color 0.3s}
+.char-counter.has-text{color:var(--ac)}
+.input-hint{font-size:11px;color:var(--w4);display:flex;align-items:center;gap:4px}
+.input-hint svg{opacity:0.4}
 
 /* ── BUTTONS ── */
 .action-row{display:flex;gap:10px;margin-top:16px}
-.btn-primary{flex:1;padding:16px;font-size:17px;font-weight:600;border-radius:14px;min-height:50px;border:none;color:#fff;font-family:inherit;cursor:pointer;background:linear-gradient(135deg,#0a84ff,#0070e0);display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.15s;box-shadow:0 2px 20px rgba(10,132,255,0.2)}
+.btn-primary{flex:1;padding:16px;font-size:17px;font-weight:600;border-radius:14px;min-height:50px;border:none;color:#fff;font-family:inherit;cursor:pointer;background:linear-gradient(135deg,#0a84ff,#0060c0);display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.15s;box-shadow:0 2px 20px rgba(10,132,255,0.2);position:relative;overflow:hidden}
+.btn-primary::before{content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.12),transparent);transition:none;animation:btnShimmer 3s ease-in-out infinite}
+@keyframes btnShimmer{0%,100%{left:-100%}50%{left:150%}}
 .btn-primary:active{opacity:0.7;transform:scale(0.98)}
+.btn-primary:active::before{animation:none}
 .btn-secondary{padding:16px;font-size:17px;font-weight:600;border-radius:14px;min-height:50px;background:var(--glass);border:1px solid var(--glass-border);color:var(--ac);font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
 .btn-secondary:active{opacity:0.7;transform:scale(0.98)}
+
+/* ── QUICK ACTIONS ── */
+.quick-actions{display:flex;gap:8px;margin-top:12px}
+.quick-action{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px;background:var(--glass);border:1px solid var(--glass-border);border-radius:14px;cursor:pointer;transition:all 0.2s;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);user-select:none}
+.quick-action:active{transform:scale(0.96);background:var(--acbg);border-color:rgba(10,132,255,0.3)}
+.quick-action-icon{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:var(--s2);color:var(--w3);transition:all 0.2s}
+.quick-action:active .quick-action-icon{background:var(--acbg);color:var(--ac)}
+.quick-action-label{font-size:11px;font-weight:600;color:var(--w3);text-align:center;letter-spacing:0.2px}
 
 /* ── STATS ── */
 .stats-bar{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
@@ -231,10 +276,23 @@ textarea::placeholder{color:var(--w4)}
   .section{margin-bottom:20px}
   .section-label{font-size:20px;margin-bottom:14px}
 
+  /* Compila hero */
+  .compila-hero{border-radius:22px;padding:28px 22px;margin-bottom:18px}
+  .hero-title{font-size:28px}
+  .hero-subtitle{font-size:14px}
+  .flow-steps{margin-bottom:22px;padding:0 2px}
+  .flow-num{width:30px;height:30px;font-size:13px}
+  .flow-label{font-size:12px}
+  .quick-actions{gap:10px;margin-top:14px}
+  .quick-action{padding:16px 8px;border-radius:16px}
+  .quick-action-icon{width:36px;height:36px;border-radius:12px}
+  .quick-action-label{font-size:11px}
+
   /* Input card: taller, more padding */
   .input-card{border-radius:18px}
   .input-header{padding:16px 18px}
   .input-header-left{font-size:15px}
+  .input-footer{padding:12px 18px}
   textarea{font-size:16px;line-height:2;min-height:220px;padding:16px 18px}
 
   /* Buttons: bigger touch targets */
@@ -332,6 +390,36 @@ textarea::placeholder{color:var(--w4)}
 <div class="main">
 
   <div class="tab-panel active" id="panel-0">
+
+    <!-- Hero -->
+    <div class="compila-hero">
+      <div class="hero-status">
+        <div class="hero-status-dot"></div>
+        <span class="hero-status-text">Pronto</span>
+      </div>
+      <div class="hero-title">Ispezione Saldature</div>
+      <div class="hero-subtitle">Incolla i dati, elabora in un tap</div>
+    </div>
+
+    <!-- Flow Steps -->
+    <div class="flow-steps" id="flow-steps">
+      <div class="flow-step active" data-flow="0">
+        <div class="flow-num">1</div>
+        <span class="flow-label">Incolla</span>
+      </div>
+      <div class="flow-line" id="flow-line-1"></div>
+      <div class="flow-step" data-flow="1">
+        <div class="flow-num">2</div>
+        <span class="flow-label">Elabora</span>
+      </div>
+      <div class="flow-line" id="flow-line-2"></div>
+      <div class="flow-step" data-flow="2">
+        <div class="flow-num">3</div>
+        <span class="flow-label">Risultati</span>
+      </div>
+    </div>
+
+    <!-- Input Card -->
     <div class="section">
       <div class="section-label">Lista saldature</div>
       <div class="input-card">
@@ -340,8 +428,17 @@ textarea::placeholder{color:var(--w4)}
           <button class="clear-btn" id="btn-clear">Svuota</button>
         </div>
         <textarea id="input-lista" placeholder="10/03/2026 DX&#10;ALLUMINOTERMICA 120+300 CONFORME&#10;ALLUMINOTERMICA 120+450 4212&#10;NO DAC 120+600&#10;..."></textarea>
+        <div class="input-footer">
+          <span class="char-counter" id="char-counter">0 righe</span>
+          <span class="input-hint">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg>
+            Incolla dal clipboard
+          </span>
+        </div>
       </div>
     </div>
+
+    <!-- Actions -->
     <div class="section">
       <div class="action-row">
         <button class="btn-primary" id="btn-elabora">
@@ -351,6 +448,31 @@ textarea::placeholder{color:var(--w4)}
         <button class="btn-secondary" id="btn-reset">Reset</button>
       </div>
     </div>
+
+    <!-- Quick Actions -->
+    <div class="section">
+      <div class="quick-actions">
+        <div class="quick-action" id="qa-esempio">
+          <div class="quick-action-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          </div>
+          <span class="quick-action-label">Esempio</span>
+        </div>
+        <div class="quick-action" id="qa-paste">
+          <div class="quick-action-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg>
+          </div>
+          <span class="quick-action-label">Incolla</span>
+        </div>
+        <div class="quick-action" id="qa-last">
+          <div class="quick-action-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+          </div>
+          <span class="quick-action-label">Ultima</span>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <div class="tab-panel" id="panel-1">
@@ -919,17 +1041,82 @@ function switchTab(i) {
   document.getElementById('panel-' + i).classList.add('active');
 }
 
+/* ── COMPILA: Flow Steps + Char Counter + Quick Actions ── */
+const textarea = document.getElementById('input-lista');
+const charCounter = document.getElementById('char-counter');
+const heroStatus = document.querySelector('.hero-status-text');
+const heroStatusDot = document.querySelector('.hero-status-dot');
+
+function updateFlowSteps() {
+  const hasText = textarea.value.trim().length > 0;
+  const hasResults = saldature && saldature.length > 0;
+  const steps = document.querySelectorAll('.flow-step');
+  const lines = [document.getElementById('flow-line-1'), document.getElementById('flow-line-2')];
+
+  steps.forEach(s => { s.classList.remove('active','done'); });
+  lines.forEach(l => { l.classList.remove('lit'); });
+
+  if (hasResults) {
+    steps[0].classList.add('done'); steps[1].classList.add('done'); steps[2].classList.add('active');
+    lines[0].classList.add('lit'); lines[1].classList.add('lit');
+    heroStatus.textContent = saldature.length + ' saldature elaborate';
+    heroStatusDot.style.background = 'var(--ac)';
+    heroStatusDot.style.boxShadow = '0 0 8px rgba(10,132,255,0.5)';
+  } else if (hasText) {
+    steps[0].classList.add('done'); steps[1].classList.add('active');
+    lines[0].classList.add('lit');
+    heroStatus.textContent = 'Dati inseriti';
+    heroStatusDot.style.background = 'var(--yl)';
+    heroStatusDot.style.boxShadow = '0 0 8px rgba(255,214,10,0.5)';
+  } else {
+    steps[0].classList.add('active');
+    heroStatus.textContent = 'Pronto';
+    heroStatusDot.style.background = 'var(--gn)';
+    heroStatusDot.style.boxShadow = '0 0 8px rgba(48,209,88,0.5)';
+  }
+}
+
+function updateCharCounter() {
+  const lines = textarea.value.split('\n').filter(l => l.trim()).length;
+  charCounter.textContent = lines + (lines === 1 ? ' riga' : ' righe');
+  charCounter.classList.toggle('has-text', lines > 0);
+  updateFlowSteps();
+}
+
+textarea.addEventListener('input', updateCharCounter);
+textarea.addEventListener('paste', () => setTimeout(updateCharCounter, 50));
+
+// Quick actions
+document.getElementById('qa-esempio').addEventListener('click', () => {
+  textarea.value = '10/03/2026 DX\nALLUMINOTERMICA 120+300 CONFORME\nALLUMINOTERMICA 120+450 4212\nNO DAC 120+600\nALLUMINOTERMICA 120+900 CONFORME\nELETTRICA A SCINTILLIO 121+200 CONFORME';
+  updateCharCounter();
+});
+
+document.getElementById('qa-paste').addEventListener('click', async () => {
+  try {
+    const text = await navigator.clipboard.readText();
+    if (text) { textarea.value = text; updateCharCounter(); }
+  } catch(e) { /* clipboard not available */ }
+});
+
+document.getElementById('qa-last').addEventListener('click', () => {
+  const last = localStorage.getItem('m2_last_input');
+  if (last) { textarea.value = last; updateCharCounter(); }
+});
+
 document.getElementById('btn-elabora').addEventListener('click', () => {
-  const txt = document.getElementById('input-lista').value;
+  const txt = textarea.value;
   if (!txt.trim()) return;
+  localStorage.setItem('m2_last_input', txt);
   saldature = parse(txt);
   aggiornaUI();
+  updateFlowSteps();
   switchTab(1);
 });
-document.getElementById('btn-clear').addEventListener('click', () => { document.getElementById('input-lista').value=''; });
+document.getElementById('btn-clear').addEventListener('click', () => { textarea.value=''; updateCharCounter(); });
 document.getElementById('btn-reset').addEventListener('click', () => {
-  document.getElementById('input-lista').value=''; saldature=[];
-  aggiornaUI(); switchTab(0);
+  textarea.value=''; saldature=[];
+  aggiornaUI(); updateCharCounter(); switchTab(0);
 });
 
 function aggiornaUI() {
