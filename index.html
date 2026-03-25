@@ -1470,19 +1470,25 @@ function generaPDF() {
   var nomePdf = [_linea, _km, _fila, _cod ? _cod : _stato, _data].filter(Boolean).join('_') + '.pdf';
   if (nomePdf === '.pdf') nomePdf = 'Scheda_I1.pdf';
 
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-  if (isIOS) {
-    doc.save(nomePdf);
+  const pdfBlob = doc.output('blob');
+  const pdfFile = new File([pdfBlob], nomePdf, { type: 'application/pdf' });
+
+  // iOS: usa Share API per dare il nome corretto al file
+  if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+    navigator.share({ files: [pdfFile] }).catch(function(){
+      // Se l'utente annulla lo share, fallback a download diretto
+      doc.save(nomePdf);
+    });
   } else {
-    const blob = doc.output('blob');
-    const url = URL.createObjectURL(blob);
+    // Android/Desktop: download diretto
+    const url = URL.createObjectURL(pdfBlob);
     const a = document.createElement('a');
     a.href = url;
     a.download = nomePdf;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
   }
 }
 
