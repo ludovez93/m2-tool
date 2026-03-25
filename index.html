@@ -1459,20 +1459,26 @@ function generaPDF() {
     try { doc.addImage(sigImg, "PNG", 310, 705, 120, 40); } catch(e){}
   }
 
+  // Costruisci nome file: Linea_KM_DX-SX_Codice-o-NODAC_Data.pdf
+  var _linea = (document.getElementById('linea').value||'').trim().replace(/[^a-zA-Z0-9àèéìòù ]/gi,'').replace(/\s+/g,'-');
+  var _km = (document.getElementById('km').value||'').trim().replace(/[^a-zA-Z0-9+.]/g,'_');
+  var _fila = ''; if(schedaState['fila_dx']) _fila='DX'; if(schedaState['fila_sx']) _fila='SX';
+  var _cod = (document.getElementById('codice').value||'').trim().replace(/[^a-zA-Z0-9.]/g,'');
+  var _stato = '';
+  if (currentDifettoIdx !== null && saldature[currentDifettoIdx] && saldature[currentDifettoIdx].stato === 'nodac') _stato = 'NODAC';
+  var _data = (document.getElementById('data_scheda').value||'').trim().replace(/\//g,'-');
+  var nomePdf = [_linea, _km, _fila, _cod ? _cod : _stato, _data].filter(Boolean).join('_') + '.pdf';
+  if (nomePdf === '.pdf') nomePdf = 'Scheda_I1.pdf';
+
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
   if (isIOS) {
-    // iOS WebKit non supporta download via a.click() — apre in nuova scheda
-    const dataUri = doc.output('datauristring');
-    window.open(dataUri, '_blank');
+    doc.save(nomePdf);
   } else {
     const blob = doc.output('blob');
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    var _km=(document.getElementById('km').value||'').replace(/[^a-zA-Z0-9+.]/g,'_');
-    var _fila='';if(schedaState['fila_dx'])_fila='DX';if(schedaState['fila_sx'])_fila='SX';
-    var _cod=(document.getElementById('codice').value||'').replace(/[^a-zA-Z0-9]/g,'');
-    a.download=['scheda',_km,_fila,_cod].filter(Boolean).join('_')+'.pdf';
+    a.download = nomePdf;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
