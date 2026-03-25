@@ -18,11 +18,17 @@
 /* M2 — Unified Mobile-First */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
 :root{
+  /* Superfici */
   --bg:#000;--s1:#0f0f0f;--s2:#1a1a1a;--s3:#252525;
-  --sep:rgba(255,255,255,0.08);
-  --w:#fff;--w2:#ccc;--w3:#777;--w4:#444;
-  --ac:#0a84ff;--ac2:#409cff;--acbg:rgba(10,132,255,0.12);
-  --rd:#ff453a;--yl:#ffd60a;--gn:#30d158;
+  --sep:rgba(255,255,255,0.06);
+  /* Testo */
+  --w:#fff;--w2:#b0b0b0;--w3:#666;--w4:#333;
+  /* Accent */
+  --ac:#0a84ff;--ac2:#409cff;--acbg:rgba(10,132,255,0.10);
+  /* Semantici */
+  --rd:#ff453a;--rd-bg:rgba(255,69,58,0.06);
+  --yl:#ffd60a;--yl-bg:rgba(255,214,10,0.06);
+  --gn:#30d158;--gn-bg:rgba(48,209,88,0.08);
 }
 html{padding:env(safe-area-inset-top) env(safe-area-inset-right) 0 env(safe-area-inset-left)}
 html,body{background:var(--bg);color:var(--w);font-family:-apple-system,'DM Sans',system-ui,sans-serif;font-size:16px;min-height:100vh;-webkit-text-size-adjust:100%;overscroll-behavior:none}
@@ -74,7 +80,7 @@ html::after{content:'M2';position:fixed;top:50%;left:50%;transform:translate(-50
 .input-card{background:var(--s1);border:none;border-radius:16px;overflow:hidden}
 .input-header{padding:14px 16px;border-bottom:1px solid var(--sep);display:flex;align-items:center;justify-content:space-between}
 .input-header-left{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--w2)}
-.input-dot{width:8px;height:8px;border-radius:50%;background:var(--ac);box-shadow:0 0 8px rgba(10,132,255,0.4)}
+.input-dot{width:8px;height:8px;border-radius:50%;background:var(--ac)}
 .clear-btn{font-size:15px;color:var(--ac);background:none;border:none;cursor:pointer;font-family:inherit;padding:4px 0}
 textarea{width:100%;background:transparent;border:none;color:var(--w2);font-family:'DM Mono',monospace;font-size:16px;line-height:1.9;padding:14px 16px;resize:none;outline:none;min-height:200px}
 textarea::placeholder{color:var(--w4)}
@@ -89,8 +95,10 @@ textarea::placeholder{color:var(--w4)}
 /* ── STATS ── */
 .stats-bar{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
 .stat-card{padding:16px;background:var(--s1);border:none;border-radius:14px;display:flex;flex-direction:column;gap:4px}
-.stat-card.danger{background:rgba(255,69,58,0.08)}
-.stat-card.nodac{background:rgba(255,214,10,0.06)}
+.stat-card.ok{background:var(--gn-bg)}
+.stat-card.ok .stat-value{color:var(--gn)}
+.stat-card.danger{background:var(--rd-bg)}
+.stat-card.nodac{background:var(--yl-bg)}
 .stat-value{font-family:'DM Mono',monospace;font-size:28px;font-weight:700;color:var(--w);line-height:1}
 .stat-card.danger .stat-value{color:var(--rd)}
 .stat-card.nodac .stat-value{color:var(--yl)}
@@ -101,23 +109,23 @@ textarea::placeholder{color:var(--w4)}
 .result-row{background:transparent;border:none;border-radius:0;padding:14px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--sep);min-height:auto}
 .result-row:last-child{border-bottom:none}
 .result-row:active{background:rgba(255,255,255,0.02)}
-.result-row.has-defect{background:rgba(255,69,58,0.04)}
-.result-row.has-nodac{background:rgba(255,214,10,0.03)}
+.result-row.has-defect{background:var(--rd-bg)}
+.result-row.has-nodac{background:var(--yl-bg)}
 .row-index{font-family:'DM Mono',monospace;font-size:11px;color:var(--w4);width:24px;text-align:right;flex-shrink:0}
 .row-km{font-family:'DM Mono',monospace;font-size:15px;color:var(--ac);font-weight:600;width:80px;flex-shrink:0}
 .row-type{font-size:15px;font-weight:400;color:var(--w2);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .row-tags{display:flex;gap:4px;flex-shrink:0}
 .tag{font-family:'DM Mono',monospace;font-size:9px;font-weight:600;padding:3px 8px;border-radius:6px;letter-spacing:0.3px;text-transform:uppercase;border:none}
-.tag-ok{background:rgba(48,209,88,0.1);color:var(--gn)}
-.tag-diff{background:rgba(255,69,58,0.1);color:var(--rd)}
-.tag-nodac{background:rgba(255,214,10,0.08);color:var(--yl)}
+.tag-ok{background:var(--gn-bg);color:var(--gn)}
+.tag-diff{background:var(--rd-bg);color:var(--rd)}
+.tag-nodac{background:var(--yl-bg);color:var(--yl)}
 .tag-bin{background:var(--s2);color:var(--w3)}
 
 /* ── DIFETTI ── */
 .difetto-card{background:var(--s1);border:none;border-radius:16px;overflow:hidden;margin-bottom:12px}
-.difetto-header{padding:14px 16px;background:rgba(255,69,58,0.05);border-bottom:1px solid var(--sep)}
+.difetto-header{padding:14px 16px;background:var(--rd-bg);border-bottom:1px solid var(--sep)}
 .difetto-title{font-size:15px;font-weight:700;color:var(--rd);display:flex;align-items:center;gap:8px}
-.difetto-title::before{content:'';width:6px;height:6px;background:var(--rd);border-radius:50%;box-shadow:0 0 6px rgba(255,69,58,0.4);flex-shrink:0}
+.difetto-title::before{content:'';width:6px;height:6px;background:var(--rd);border-radius:50%;flex-shrink:0}
 .difetto-list{padding:0}
 .difetto-row{padding:14px 16px;border-radius:0;background:transparent;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--sep)}
 .difetto-row:last-child{border-bottom:none}
@@ -194,7 +202,7 @@ textarea::placeholder{color:var(--w4)}
 .sig-actions{display:flex;gap:8px;margin-top:8px}
 .sig-btn{flex:1;padding:12px;border-radius:12px;border:none;background:var(--s2);color:var(--w2);font-family:inherit;font-size:14px;font-weight:500;cursor:pointer;text-align:center;min-height:44px}
 .sig-btn:active{opacity:0.5}
-.sig-btn.danger{background:rgba(255,69,58,0.08);color:var(--rd)}
+.sig-btn.danger{background:var(--rd-bg);color:var(--rd)}
 .sig-saved{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
 .sig-saved-item{display:flex;align-items:center;gap:8px;background:var(--s1);border:none;border-radius:12px;padding:10px 14px;cursor:pointer}
 .sig-saved-item:active{opacity:0.5}
@@ -342,7 +350,7 @@ textarea::placeholder{color:var(--w4)}
       <div class="section-label">Riepilogo</div>
       <div class="stats-bar">
         <div class="stat-card"><div class="stat-value" id="s-tot">0</div><div class="stat-label">Saldature totali</div></div>
-        <div class="stat-card"><div class="stat-value" id="s-ok" style="color:#4caf82">0</div><div class="stat-label">Conformi</div></div>
+        <div class="stat-card ok"><div class="stat-value" id="s-ok">0</div><div class="stat-label">Conformi</div></div>
         <div class="stat-card danger"><div class="stat-value" id="s-diff">0</div><div class="stat-label">Difetti</div></div>
         <div class="stat-card nodac"><div class="stat-value" id="s-nodac">0</div><div class="stat-label">NO DAC</div></div>
       </div>
@@ -946,8 +954,8 @@ function aggiornaUI() {
     }</div></div>`;
   }
   if (soloNodac.length) {
-    html+=`<div class="difetto-card" style="border-color:var(--yellow);"><div class="difetto-header" style="background:var(--yellow-dim);border-color:var(--yellow)"><div class="difetto-title" style="color:#f0b429">⚠ ${soloNodac.length} NO DAC</div></div><div class="difetto-list">${
-      soloNodac.map((d,i)=>`<div class="difetto-row"><span class="difetto-code" style="color:#f0b429">${d.codice||'—'}</span><div class="difetto-info">${d.km}${d.fila?' · '+d.fila:''} · ${d.tipo}${d.data?' · '+d.data:''}</div><button class="btn-pdf" onclick="apriModal(${saldature.indexOf(d)})">↓ PDF</button></div>${i<soloNodac.length-1?'<div class="divider"></div>':''}`).join('')
+    html+=`<div class="difetto-card"><div class="difetto-header" style="background:var(--yl-bg)"><div class="difetto-title" style="color:var(--yl)">⚠ ${soloNodac.length} NO DAC</div></div><div class="difetto-list">${
+      soloNodac.map((d,i)=>`<div class="difetto-row"><span class="difetto-code" style="color:var(--yl)">${d.codice||'—'}</span><div class="difetto-info">${d.km}${d.fila?' · '+d.fila:''} · ${d.tipo}${d.data?' · '+d.data:''}</div><button class="btn-pdf" onclick="apriModal(${saldature.indexOf(d)})">↓ PDF</button></div>${i<soloNodac.length-1?'<div class="divider"></div>':''}`).join('')
     }</div></div>`;
   }
   dw.innerHTML=html;
