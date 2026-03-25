@@ -250,34 +250,50 @@ textarea::placeholder{color:var(--w4)}
 .tsv-preview{font-family:'DM Mono',monospace;font-size:11px;color:var(--w3);padding:12px 16px;line-height:1.9;overflow-x:auto;white-space:pre;max-height:160px;overflow-y:auto}
 
 /* ── SCHEDA EDITOR ── */
-#scheda-editor{position:fixed;inset:0;background:var(--bg);z-index:200;display:none;flex-direction:column}
+#scheda-editor{position:fixed;inset:0;background:linear-gradient(160deg,#030306 0%,#06060f 30%,#080812 50%,#060610 70%,#030306 100%);z-index:200;display:none;flex-direction:column}
 #scheda-editor.open{display:flex;animation:su 0.4s cubic-bezier(0.32,0.72,0,1)}
 @keyframes su{from{transform:translateY(100%)}to{transform:none}}
-#scheda-editor .se-topbar{height:56px;background:rgba(0,0,0,0.88);backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);border-bottom:1px solid var(--sep);position:relative;display:flex;align-items:center;padding:0 16px;gap:12px}
-#scheda-editor .se-topbar-title{font-size:17px;font-weight:700}
-#scheda-editor .se-topbar-logo{background:var(--ac);color:#fff;font-weight:800;font-size:10px;padding:5px 8px;border-radius:6px}
-#scheda-editor .se-btn-pdf{background:var(--ac);color:#fff;border:none;border-radius:10px;padding:8px 16px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer}
-#scheda-editor .se-btn-pdf:active{opacity:0.6}
-#scheda-editor button[onclick="chiudiScheda()"]{width:30px;height:30px;background:var(--s2);border:none;border-radius:50%;color:var(--w3);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
-#scheda-editor .se-tabs{height:48px;background:transparent;border-bottom:1px solid var(--sep);display:flex}
-#scheda-editor .se-tab{flex:1;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;color:var(--w3);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.2s}
+#scheda-editor .se-topbar{height:56px;background:rgba(3,3,5,0.92);backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);border-bottom:1px solid var(--card-border);position:relative;display:flex;align-items:center;padding:0 16px;gap:12px;overflow:hidden}
+#scheda-editor .se-topbar::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(10,132,255,0.3),transparent);animation:topbarGlow 3s ease-in-out infinite}
+@keyframes topbarGlow{0%,100%{opacity:0.3}50%{opacity:0.8}}
+#scheda-editor .se-topbar-title{font-size:17px;font-weight:700;background:linear-gradient(135deg,#fff,#ccc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+#scheda-editor .se-topbar-logo{background:linear-gradient(135deg,#0a84ff,#0060c0);color:#fff;font-weight:800;font-size:10px;padding:5px 8px;border-radius:6px;box-shadow:0 2px 10px rgba(10,132,255,0.3)}
+#scheda-editor .se-btn-pdf{background:linear-gradient(135deg,#0a84ff,#0060c0);color:#fff;border:none;border-radius:10px;padding:8px 16px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;box-shadow:0 2px 12px rgba(10,132,255,0.2);transition:all 0.15s;position:relative;overflow:hidden}
+#scheda-editor .se-btn-pdf::before{content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.12),transparent);animation:btnShimmer 3s ease-in-out infinite}
+#scheda-editor .se-btn-pdf:active{opacity:0.7;transform:scale(0.96)}
+#scheda-editor button[onclick="chiudiScheda()"]{width:30px;height:30px;background:var(--s2);border:1px solid var(--card-border);border-radius:50%;color:var(--w3);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s}
+#scheda-editor button[onclick="chiudiScheda()"]:active{background:var(--rd-bg);color:var(--rd);border-color:rgba(255,69,58,0.3)}
+#scheda-editor .se-tabs{height:52px;background:rgba(3,3,5,0.6);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--card-border);display:flex;padding:0 8px;gap:4px}
+#scheda-editor .se-tab{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;font-size:14px;font-weight:600;color:var(--w3);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.25s;border-radius:0;margin:0;position:relative}
 #scheda-editor .se-tab.active{color:var(--w);border-bottom-color:var(--ac)}
+#scheda-editor .se-tab.active::after{content:'';position:absolute;bottom:-1px;left:20%;right:20%;height:2px;background:var(--ac);box-shadow:0 0 10px rgba(10,132,255,0.5);border-radius:2px}
+#scheda-editor .se-tab:active{opacity:0.5}
+.se-tab-icon{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 #scheda-editor .se-page{display:none;position:relative;top:auto;bottom:auto;left:auto;right:auto;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;min-height:0}
 #scheda-editor .se-page.active{display:block}
 #scheda-editor .se-preview-page.active{display:flex}
 .ov-t{position:absolute;font-family:'DM Mono',monospace;font-size:8.5px;color:#111;white-space:nowrap;line-height:1;pointer-events:none}
 .ov-x{position:absolute;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;color:#111;transform:translate(-50%,-50%);pointer-events:none}
-.se-tab-icon{font-size:18px}
 .se-preview-page{padding:0;background:#000;align-items:flex-start;justify-content:center}
 .scheda-wrap{position:relative;width:100%;max-width:100%;overflow:hidden}
 .scheda-wrap img{display:block;width:100%;height:auto}
 .se-overlay{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none}
-.se-form-page{padding:12px 16px 100px}
+.se-form-page{padding:16px 16px 100px}
 
 /* ── FORM SECTIONS ── */
-.fsection{background:var(--glass);border:1px solid var(--glass-border);border-radius:16px;margin-bottom:12px;overflow:hidden;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
-.fsection-head{padding:12px 16px;font-size:15px;font-weight:700;letter-spacing:0;text-transform:none;color:var(--w);background:transparent;border-bottom:none;display:block}
+.fsection{background:var(--glass);border:1px solid var(--glass-border);border-radius:16px;margin-bottom:14px;overflow:hidden;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);animation:fsectionIn 0.5s ease both;position:relative}
+.fsection:nth-child(1){animation-delay:0s}
+.fsection:nth-child(2){animation-delay:0.06s}
+.fsection:nth-child(3){animation-delay:0.12s}
+.fsection:nth-child(4){animation-delay:0.18s}
+.fsection:nth-child(5){animation-delay:0.24s}
+.fsection:nth-child(6){animation-delay:0.30s}
+.fsection:nth-child(7){animation-delay:0.36s}
+.fsection:nth-child(8){animation-delay:0.42s}
+@keyframes fsectionIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.fsection-head{padding:14px 16px;font-size:15px;font-weight:700;letter-spacing:0;text-transform:none;color:var(--w);background:transparent;border-bottom:1px solid var(--sep);display:flex;align-items:center;gap:10px}
 .fsection-head::before{display:none}
+.fsection-icon{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;color:var(--ac);flex-shrink:0}
 .fsection-body{padding:0 16px 12px}
 .frow{display:flex;gap:10px;margin-bottom:0}
 .frow:last-child{margin-bottom:0}
@@ -285,8 +301,8 @@ textarea::placeholder{color:var(--w4)}
 .frow:last-child .fgroup{border-bottom:none}
 .fgroup.w2{flex:2}
 .fgroup label{font-size:13px;font-weight:500;letter-spacing:0;text-transform:none;color:var(--w3);font-family:inherit;margin-bottom:4px}
-.fgroup input[type=text]{background:transparent;border:none;border-radius:0;padding:4px 0;color:var(--w);font-family:'DM Mono',monospace;font-size:17px;outline:none;width:100%;min-height:auto;-webkit-appearance:none}
-.fgroup input[type=text]:focus{box-shadow:none}
+.fgroup input[type=text]{background:transparent;border:none;border-bottom:1px solid transparent;border-radius:0;padding:4px 0;color:var(--w);font-family:'DM Mono',monospace;font-size:17px;outline:none;width:100%;min-height:auto;-webkit-appearance:none;transition:border-color 0.2s}
+.fgroup input[type=text]:focus{box-shadow:none;border-bottom-color:rgba(10,132,255,0.3)}
 .fgroup input[type=text]::placeholder{color:var(--w4)}
 .fgroup input.pinned{color:var(--ac)}
 .pill-group{display:flex;flex-wrap:wrap;gap:8px;padding:4px 0}
@@ -395,13 +411,14 @@ textarea::placeholder{color:var(--w4)}
   #scheda-editor .se-topbar{height:58px}
   #scheda-editor .se-topbar-title{font-size:18px}
   #scheda-editor .se-btn-pdf{padding:10px 18px;font-size:15px}
-  #scheda-editor .se-tabs{height:48px}
+  #scheda-editor .se-tabs{height:54px}
   #scheda-editor .se-tab{font-size:14px}
 
   /* Form: bigger inputs */
-  .se-form-page{padding:14px 18px 110px}
-  .fsection{border-radius:18px;margin-bottom:14px}
-  .fsection-head{padding:14px 18px;font-size:16px}
+  .se-form-page{padding:16px 18px 110px}
+  .fsection{border-radius:18px;margin-bottom:16px}
+  .fsection-head{padding:16px 18px;font-size:16px;gap:10px}
+  .fsection-icon{width:22px;height:22px}
   .fsection-body{padding:4px 18px 14px}
   .fgroup{padding:12px 0}
   .fgroup label{font-size:13px;margin-bottom:6px}
@@ -633,17 +650,19 @@ textarea::placeholder{color:var(--w4)}
   </div>
   <div class="se-tabs">
     <div class="se-tab active" onclick="setSchedaTab('form')" id="se-tab-form">
-      <span class="se-tab-icon">✏️</span> Compila
+      <svg class="se-tab-icon" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      Compila
     </div>
     <div class="se-tab" onclick="setSchedaTab('preview')" id="se-tab-preview">
-      <span class="se-tab-icon">👁</span> Anteprima
+      <svg class="se-tab-icon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      Anteprima
     </div>
   </div>
 <div class="se-page active se-form-page" id="se-page-form">
 
   <!-- Ubicazione -->
   <div class="fsection">
-    <div class="fsection-head">📍 Ubicazione</div>
+    <div class="fsection-head"><svg class="fsection-icon" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Ubicazione</div>
     <div class="fsection-body">
       <div class="frow">
         <div class="fgroup w2"><label>Scheda Nr.</label><input type="text" id="scheda_nr" oninput="upd()"></div>
@@ -664,7 +683,7 @@ textarea::placeholder{color:var(--w4)}
 
   <!-- Binario & Fila -->
   <div class="fsection">
-    <div class="fsection-head">🛤 Binario &amp; Fila</div>
+    <div class="fsection-head"><svg class="fsection-icon" viewBox="0 0 24 24"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>Binario &amp; Fila</div>
     <div class="fsection-body">
       <div class="frow"><div class="fgroup"><label>Binario</label>
         <div class="pill-group" id="pg-binario">
@@ -684,7 +703,7 @@ textarea::placeholder{color:var(--w4)}
 
   <!-- Rotaia -->
   <div class="fsection">
-    <div class="fsection-head">⚙️ Tipo Rotaia</div>
+    <div class="fsection-head"><svg class="fsection-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>Tipo Rotaia</div>
     <div class="fsection-body">
       <div class="frow"><div class="fgroup">
         <div class="pill-group" id="pg-rotaia">
@@ -698,7 +717,7 @@ textarea::placeholder{color:var(--w4)}
 
   <!-- Caratteristiche linea -->
   <div class="fsection">
-    <div class="fsection-head">🗺 Caratteristiche Linea</div>
+    <div class="fsection-head"><svg class="fsection-icon" viewBox="0 0 24 24"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>Caratteristiche Linea</div>
     <div class="fsection-body">
       <div class="frow"><div class="fgroup">
         <div class="pill-group" id="pg-linea">
@@ -715,7 +734,7 @@ textarea::placeholder{color:var(--w4)}
 
   <!-- Difetto -->
   <div class="fsection">
-    <div class="fsection-head">🔍 Caratteristiche Difetto</div>
+    <div class="fsection-head"><svg class="fsection-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Caratteristiche Difetto</div>
     <div class="fsection-body">
       <div class="frow">
         <div class="fgroup"><label>Data Scheda</label><input type="text" id="data_scheda" placeholder="GG/MM/AAAA" oninput="upd()"></div>
@@ -756,7 +775,7 @@ textarea::placeholder{color:var(--w4)}
 
   <!-- Galileo & Saldatura -->
   <div class="fsection">
-    <div class="fsection-head">⚡ Segnalazioni</div>
+    <div class="fsection-head"><svg class="fsection-icon" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Segnalazioni</div>
     <div class="fsection-body">
       <div class="frow"><div class="fgroup"><label>Galileo</label>
         <div class="pill-group" id="pg-galileo">
@@ -781,7 +800,7 @@ textarea::placeholder{color:var(--w4)}
 
   <!-- Esecuzione -->
   <div class="fsection">
-    <div class="fsection-head">📋 Dati Esecuzione</div>
+    <div class="fsection-head"><svg class="fsection-icon" viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg>Dati Esecuzione</div>
     <div class="fsection-body">
       <div class="frow">
         <div class="fgroup w2"><label>Ditta Esecutrice</label><input type="text" id="ditta" oninput="upd()"></div>
@@ -803,7 +822,7 @@ textarea::placeholder{color:var(--w4)}
 
   <!-- Firma -->
   <div class="fsection">
-    <div class="fsection-head">✍ Firma</div>
+    <div class="fsection-head"><svg class="fsection-icon" viewBox="0 0 24 24"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>Firma</div>
     <div class="fsection-body">
       <div class="fgroup"><label>DISEGNA LA FIRMA</label></div>
       <div class="sig-canvas-wrap">
@@ -820,7 +839,10 @@ textarea::placeholder{color:var(--w4)}
   </div>
 
   <div style="padding:0 16px 24px">
-    <button class="btn-primary" onclick="generaPDF()" style="width:100%;font-size:17px">Scarica PDF</button>
+    <button class="btn-primary" onclick="generaPDF()" style="width:100%;font-size:17px">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Scarica PDF
+    </button>
   </div>
 
 </div><!-- /form page -->
