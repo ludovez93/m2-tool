@@ -1461,7 +1461,7 @@ function generaPDF() {
 
   // Costruisci nome file: Linea_KM_DX-SX_Codice-o-NODAC_Data.pdf
   var _linea = (document.getElementById('linea').value||'').trim().replace(/[^a-zA-Z0-9àèéìòù ]/gi,'').replace(/\s+/g,'-');
-  var _km = (document.getElementById('km').value||'').trim().replace(/[^a-zA-Z0-9+.]/g,'_');
+  var _km = (document.getElementById('km').value||'').trim().replace(/\+/g,'-').replace(/[^a-zA-Z0-9\-.]/g,'_');
   var _fila = ''; if(schedaState['fila_dx']) _fila='DX'; if(schedaState['fila_sx']) _fila='SX';
   var _cod = (document.getElementById('codice').value||'').trim().replace(/[^a-zA-Z0-9.]/g,'');
   var _stato = '';
@@ -1470,10 +1470,15 @@ function generaPDF() {
     if (!_cod && _s.codice) _cod = _s.codice.replace(/[^a-zA-Z0-9.]/g,'');
     if (_s.stato === 'nodac') _stato = 'NODAC';
   }
-  var _data = (document.getElementById('data_scheda').value||'').trim().replace(/\//g,'-');
+  var _data = (document.getElementById('data_scheda').value||'').trim();
   if (!_data && currentDifettoIdx !== null && saldature[currentDifettoIdx] && saldature[currentDifettoIdx].data) {
-    _data = saldature[currentDifettoIdx].data.replace(/\//g,'-');
+    _data = saldature[currentDifettoIdx].data;
   }
+  // Se manca l'anno (es. "24/03") aggiungi anno corrente
+  if (_data && _data.match(/^\d{1,2}[\/\-]\d{1,2}$/) ) {
+    _data = _data + '/' + new Date().getFullYear();
+  }
+  _data = _data.replace(/\//g,'-');
   var nomePdf = [_linea, _km, _fila, _cod ? _cod : _stato, _data].filter(Boolean).join('_') + '.pdf';
   if (nomePdf === '.pdf') nomePdf = 'Scheda_I1.pdf';
 
