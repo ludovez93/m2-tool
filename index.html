@@ -56,7 +56,6 @@ html::after{content:'M2';position:fixed;top:50%;left:50%;transform:translate(-50
 .tab:nth-child(1)::before{content:'📋'}
 .tab:nth-child(2)::before{content:'📊'}
 .tab:nth-child(3)::before{content:'⚠️'}
-.tab:nth-child(4)::before{content:'📝'}
 .tab.active{color:var(--ac)}
 .tab:active{opacity:0.5}
 .tab-count{font-family:'DM Mono',monospace;font-size:9px;padding:2px 6px;border-radius:8px;font-weight:600;background:var(--s2);color:var(--w3);border:none}
@@ -312,7 +311,6 @@ textarea::placeholder{color:var(--w4)}
   <div class="tab active" data-tab="0">Compila <span class="tab-count" id="tc0">—</span></div>
   <div class="tab" data-tab="1">Risultati <span class="tab-count" id="tc1">0</span></div>
   <div class="tab" data-tab="2">Difetti <span class="tab-count tc-danger" id="tc2">0</span></div>
-  <div class="tab" id="tab-scheda" onclick="apriSchedaVuota()">Scheda I.1</div>
 </div>
 
 <div class="main">
@@ -368,6 +366,9 @@ textarea::placeholder{color:var(--w4)}
   </div>
 
   <div class="tab-panel" id="panel-2">
+    <div class="section">
+      <button class="btn-secondary" onclick="apriSchedaVuota()" style="width:100%">+ Nuova Scheda</button>
+    </div>
     <div id="difetti-wrap">
       <div class="empty-state"><div class="empty-icon">✓</div><div class="empty-text">Nessun difetto rilevato.</div></div>
     </div>
@@ -1095,13 +1096,6 @@ function apriSchedaVuota() {
   setTimeout(updScheda, 50);
 }
 function chiudiScheda() {
-  // Deselect Scheda I.1 tab and restore previous tab
-  var schedaTab = document.getElementById("tab-scheda");
-  if(schedaTab && schedaTab.classList.contains("active")) {
-    schedaTab.classList.remove("active");
-    var prev = document.querySelector(".tab[data-tab]");
-    if(prev) { prev.click(); }
-  }
   document.getElementById('scheda-editor').classList.remove('open');
   currentDifettoIdx = null;
 }
