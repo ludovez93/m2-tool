@@ -895,6 +895,20 @@ function parse(txt) {
     const mDataSald = resto.match(/(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})/);
     const dataSald = mDataSald ? mDataSald[1] : '';
 
+    // Nr Saldatura
+    let nrSald = '';
+    const hasDev = /\bDEV\b/i.test(restoUp);
+    // S-prefix in deviatoi (S1, S2, S09, S11)
+    const mNrDev = restoUp.match(/\bS(\d{1,2})\b/);
+    if (mNrDev && hasDev) {
+      nrSald = String(parseInt(mNrDev[1], 10));
+    }
+    // Standalone number at start (e.g. "12 25/01/2026")
+    if (!nrSald) {
+      const mNrStart = resto.match(/^\s*(\d{1,2})\b/);
+      if (mNrStart) nrSald = mNrStart[1];
+    }
+
     const restoSenzaDate = restoUp.replace(/(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})/g, '');
 
     // Note dalla riga principale
@@ -906,7 +920,7 @@ function parse(txt) {
     if (/\bGII\b/i.test(restoUp)) note.push('GII');
 
     // Deviatoi e note speciali dalla riga principale
-    const mDev = resto.match(/\b([PT][\.\s]*DEV[\w\s]*?\d+\w*)/i);
+    const mDev = resto.match(/\b([PT][\.\s]*DEV(?:[\w\s]*?\d+\w*)?)/i);
     if (mDev) note.push(mDev[0].trim());
     const mParentesi = resto.match(/\(([^)]+)\)/);
     if (mParentesi) note.push(mParentesi[1].trim());
@@ -934,7 +948,7 @@ function parse(txt) {
     let codDif = trovaDifetto(restoSenzaDate);
     let classif = '';
     const mCl = restoSenzaDate.match(/\b([SAB]\d?)\b/i);
-    if (mCl && mCl[1].length <= 2) classif = mCl[1].toUpperCase();
+    if (mCl && mCl[1].length <= 2 && !(hasDev && /^S\d/i.test(mCl[1]))) classif = mCl[1].toUpperCase();
     let isNodac = /\bNO\s*DAC\b/i.test(restoUp);
 
     // Dati extra per scheda I.1 (dalle righe figlie)
@@ -1082,7 +1096,7 @@ function parse(txt) {
     else if (codDif || /DIFETTO\s+VISIVO/i.test(note.join(' '))) stato = 'diff';
     else stato = 'ok';
 
-    out.push({km, tipo, fila, data, dataSald, linea, tratta: extra.tratta||tratta, binario, operatore, strumento,
+    out.push({km, tipo, fila, data, dataSald, nrSald, linea, tratta: extra.tratta||tratta, binario, operatore, strumento,
       stato, codice: codDif||'', classif, note: note.join(' - '), extra});
   }
   return out;
@@ -1244,7 +1258,7 @@ function generaTSV() {
     const operatore = s.operatore || ' ';
     const strumento = s.strumento || ' ';
     const dataSald = s.dataSald || ' ';
-    const nrSald = ' ';
+    const nrSald = s.nrSald || ' ';
     const wbs = ' ';
     const km = s.km || ' ';
     const kmAlleg = ' ';
