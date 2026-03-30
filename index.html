@@ -77,6 +77,12 @@ input,textarea,select,button,.cta,.tab,.pill,.sig-btn,.copy-btn,.et-clear,.btn-p
 .tc-diff{background:var(--rd-bg)!important;color:var(--rd)!important}
 .tc-nodac{background:var(--yl-bg)!important;color:var(--yl)!important}
 
+/* ── Required field highlight ── */
+.field-missing{border-bottom-color:var(--yl)!important;box-shadow:0 1px 0 var(--yl)}
+.pill-group.pg-missing{border:1px solid var(--yl);border-radius:12px;padding:2px}
+.sig-missing{border:2px solid var(--yl)!important;border-radius:10px}
+.difetto-row .done-badge{color:var(--gn);font-size:14px;font-weight:800;margin-left:6px;flex-shrink:0}
+
 /* ── Main Layout ── */
 .main{padding:44px 22px 100px;max-width:100%;position:relative;z-index:1}
 .section{margin-bottom:16px;padding:0}
@@ -1298,6 +1304,7 @@ document.getElementById('btn-elabora').addEventListener('click', () => {
       localStorage.setItem('m2_last_input', txt);
       // Pulisci schede salvate da elaborazione precedente
       for(var k in localStorage) { if(k.startsWith('m2_scheda_')) localStorage.removeItem(k); }
+      pdfGenerati.clear();
       saldature = parse(txt);
       aggiornaUI();
       updateFlowSteps();
@@ -1381,12 +1388,12 @@ function aggiornaUI() {
   let html='';
   if (soloDiff.length) {
     html+=`<div class="difetto-card" style="margin-bottom:16px;animation-delay:0.1s"><div class="difetto-header"><div class="difetto-title">${soloDiff.length} difett${soloDiff.length===1?'o':'i'} rilevat${soloDiff.length===1?'o':'i'}</div></div><div class="difetto-list">${
-      soloDiff.map((d,i)=>`<div class="difetto-row"><span class="difetto-code">${d.codice}</span><div class="difetto-info">${d.km}${d.fila?' · '+d.fila:''} · ${d.tipo}${d.data?' · '+d.data:''}</div><button class="btn-compila" onclick="apriModal(${d._idx})">Compila</button></div>${i<soloDiff.length-1?'<div class="divider"></div>':''}`).join('')
+      soloDiff.map((d,i)=>`<div class="difetto-row"><span class="difetto-code">${d.codice}</span><div class="difetto-info">${d.km}${d.fila?' · '+d.fila:''} · ${d.tipo}${d.data?' · '+d.data:''}</div>${pdfGenerati.has(d._idx)?'<span class="done-badge">✓</span>':''}<button class="btn-compila" onclick="apriModal(${d._idx})">${pdfGenerati.has(d._idx)?'Modifica':'Compila'}</button></div>${i<soloDiff.length-1?'<div class="divider"></div>':''}`).join('')
     }</div></div>`;
   }
   if (soloNodac.length) {
     html+=`<div class="difetto-card" style="animation-delay:0.2s"><div class="difetto-header" style="background:var(--yl-bg)"><div class="difetto-title" style="color:var(--yl)">⚠ ${soloNodac.length} NO DAC</div></div><div class="difetto-list">${
-      soloNodac.map((d,i)=>`<div class="difetto-row"><span class="difetto-code" style="color:var(--yl)">${d.codice||'—'}</span><div class="difetto-info">${d.km}${d.fila?' · '+d.fila:''} · ${d.tipo}${d.data?' · '+d.data:''}</div><button class="btn-compila" onclick="apriModal(${d._idx})">Compila</button></div>${i<soloNodac.length-1?'<div class="divider"></div>':''}`).join('')
+      soloNodac.map((d,i)=>`<div class="difetto-row"><span class="difetto-code" style="color:var(--yl)">${d.codice||'—'}</span><div class="difetto-info">${d.km}${d.fila?' · '+d.fila:''} · ${d.tipo}${d.data?' · '+d.data:''}</div>${pdfGenerati.has(d._idx)?'<span class="done-badge">✓</span>':''}<button class="btn-compila" onclick="apriModal(${d._idx})">${pdfGenerati.has(d._idx)?'Modifica':'Compila'}</button></div>${i<soloNodac.length-1?'<div class="divider"></div>':''}`).join('')
     }</div></div>`;
   }
   dw.innerHTML=html;
@@ -1449,6 +1456,57 @@ document.getElementById('btn-copia-tsv').addEventListener('click', () => {
 // ── SCHEDA EDITOR (replaces old modal) ──
 let currentDifettoIdx = null;
 const schedaState = {};  // checkbox state for scheda: key = "group_key"
+const pdfGenerati = new Set(); // indici saldature con PDF già generato
+
+// Campi obbligatori per codice difetto
+function getCampiObbligatori(codice) {
+  const sempre = ['linea','km','data_scheda','sonda','guadagno','fondo_scala'];
+  const pillSempre = ['binario','fila'];
+  var campi = sempre.slice();
+  var pills = pillSempre.slice();
+  if(codice === '4211' || codice === '4212' || codice === '4213') {
+    if(codice === '4211') campi.push('w1','w2','scost','percent');
+    if(codice === '4212' || codice === '4213') campi.push('ampiezza','w');
+  }
+  if(codice === '422') campi.push('note');
+  return {campi: campi, pills: pills, firma: true};
+}
+
+function evidenziaCampiMancanti() {
+  // Rimuovi vecchie evidenze
+  document.querySelectorAll('.field-missing').forEach(el => el.classList.remove('field-missing'));
+  document.querySelectorAll('.pg-missing').forEach(el => el.classList.remove('pg-missing'));
+  document.querySelectorAll('.sig-missing').forEach(el => el.classList.remove('sig-missing'));
+
+  if(currentDifettoIdx === null) return;
+  var s = saldature[currentDifettoIdx];
+  if(!s) return;
+  var req = getCampiObbligatori(s.codice);
+
+  // Campi testo
+  req.campi.forEach(function(id) {
+    var el = document.getElementById(id);
+    if(el && !el.value.trim()) el.classList.add('field-missing');
+  });
+
+  // Pills obbligatorie (binario, fila)
+  req.pills.forEach(function(g) {
+    var pg = document.getElementById('pg-' + g);
+    if(!pg) return;
+    var hasSelection = false;
+    pg.querySelectorAll('.pill').forEach(function(p) {
+      if(schedaState[p.dataset.g + '_' + p.dataset.k]) hasSelection = true;
+    });
+    if(!hasSelection) pg.classList.add('pg-missing');
+  });
+
+  // Firma
+  if(req.firma) {
+    var canvas = document.getElementById('sig-canvas');
+    var hasSig = (typeof getSigData === 'function') && getSigData();
+    if(canvas && !hasSig) canvas.classList.add('sig-missing');
+  }
+}
 
 function togPill(el) {
   const g = el.dataset.g, k = el.dataset.k;
@@ -1457,6 +1515,8 @@ function togPill(el) {
   el.classList.toggle('on', schedaState[id]);
   el.querySelector('.pill-dot').textContent = schedaState[id] ? 'X' : '';
   updScheda();
+  autoSaveScheda();
+  evidenziaCampiMancanti();
 }
 
 function apriModal(idx) {
@@ -1469,7 +1529,7 @@ function apriModal(idx) {
     setSchedaTab('form');
     document.getElementById('scheda-editor').classList.add('open');
     aggiornaNavScheda();
-    setTimeout(updScheda, 50);
+    setTimeout(function(){ updScheda(); evidenziaCampiMancanti(); }, 50);
     return;
   }
 
@@ -1546,7 +1606,7 @@ function apriModal(idx) {
   setSchedaTab('form');
   document.getElementById('scheda-editor').classList.add('open');
   aggiornaNavScheda();
-  setTimeout(updScheda, 50);
+  setTimeout(function(){ updScheda(); evidenziaCampiMancanti(); }, 50);
 }
 
 
@@ -1579,7 +1639,7 @@ function apriSchedaVuota() {
   setSchedaTab("form");
   document.getElementById("scheda-editor").classList.add("open");
   aggiornaNavScheda();
-  setTimeout(updScheda, 50);
+  setTimeout(function(){ updScheda(); evidenziaCampiMancanti(); }, 50);
 }
 function aggiornaSchedaTitolo(s) {
   var title = s.stato==='nodac' ? ('NO DAC' + (s.codice ? ' ' + s.codice : '')) : s.codice ? ('Difetto ' + s.codice) : 'Scheda I.1';
@@ -1732,6 +1792,14 @@ function upd() { updScheda(); }
 function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
 function generaPDF() {
+  // Controlla firma obbligatoria
+  var hasSig = (typeof getSigData === 'function') && getSigData();
+  if(!hasSig) {
+    showToast('Firma mancante — firma prima di generare il PDF', 'error', 3000);
+    var canvas = document.getElementById('sig-canvas');
+    if(canvas) { canvas.classList.add('sig-missing'); canvas.scrollIntoView({behavior:'smooth', block:'center'}); }
+    return;
+  }
   if(!window.jspdf) { showToast("Caricamento PDF in corso, riprova tra un secondo", "info"); return; }
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ unit:'pt', format:'a4', orientation:'portrait' });
@@ -1809,7 +1877,12 @@ function generaPDF() {
     document.body.removeChild(a);
     setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
   }
-  showToast('PDF generato', 'success', 2500);
+  // Segna come completato
+  if(currentDifettoIdx !== null) {
+    pdfGenerati.add(currentDifettoIdx);
+    aggiornaUI(); // Aggiorna badge ✓ sulle card difetti
+  }
+  showToast('PDF generato ✓', 'success', 2500);
 }
 
 
@@ -1827,9 +1900,9 @@ function scaricaTuttiPDF() {
   next();
 }
 
-// Listen to scheda form inputs for live preview + auto-save
-document.getElementById('scheda-editor').addEventListener('input', function(){ updScheda(); autoSaveScheda(); });
-document.getElementById('scheda-editor').addEventListener('change', function(){ updScheda(); autoSaveScheda(); });
+// Listen to scheda form inputs for live preview + auto-save + validazione
+document.getElementById('scheda-editor').addEventListener('input', function(){ updScheda(); autoSaveScheda(); evidenziaCampiMancanti(); });
+document.getElementById('scheda-editor').addEventListener('change', function(){ updScheda(); autoSaveScheda(); evidenziaCampiMancanti(); });
 
 // ── AUTO-SAVE SCHEDA in localStorage ──
 const SCHEDA_FIELDS = ["scheda_nr","linea","localita","tratta","km","sede","data_scheda",
