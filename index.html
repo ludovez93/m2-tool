@@ -1176,6 +1176,8 @@ function parse(txt) {
 
       // Lato intervia → ignora
       if (/^lato\s+intervia/i.test(next)) continue;
+      // Gambo (parte rotaia) → ignora
+      if (/^gambo$/i.test(next)) continue;
 
       // Riga figlia non riconosciuta: controlla se contiene codice difetto/NO DAC prima di mettere nelle note
       const nextUp2 = next.toUpperCase();
