@@ -2325,7 +2325,7 @@ if("serviceWorker" in navigator && location.protocol !== 'file:'){
     if(!getText().trim()){
       ce.innerHTML = '<div class="editor-empty"><svg viewBox="0 0 24 24"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/></svg><div class="editor-empty-title">Incolla la lista saldature</div><div class="editor-empty-sub">Da WhatsApp, Keep o appunti</div></div>';
     } else {
-      colorize();
+      setTimeout(colorize, 200);
     }
   });
 
