@@ -1866,14 +1866,15 @@ function generaPDF() {
   const pdfBlob = doc.output('blob');
   const pdfFile = new File([pdfBlob], nomePdf, { type: 'application/pdf' });
 
-  // iOS: usa Share API per dare il nome corretto al file
-  if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+  // iOS Safari/PWA: serve Share API per dare nome corretto e permettere salvataggio.
+  // Android/Desktop: download diretto — su Android anche se Share API esiste è fuorviante
+  // (apre menu condividi invece di salvare) quindi forziamo download in /Download.
+  const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent) && !window.MSStream;
+  if (isIOS && navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
     navigator.share({ files: [pdfFile] }).catch(function(){
-      // Se l'utente annulla lo share, fallback a download diretto
       doc.save(nomePdf);
     });
   } else {
-    // Android/Desktop: download diretto
     const url = URL.createObjectURL(pdfBlob);
     const a = document.createElement('a');
     a.href = url;
