@@ -895,7 +895,11 @@ function trovaDifetto(testo) {
 }
 
 function parse(txt) {
-  const righe = txt.split('\n').map(r => r.trim()).filter(Boolean);
+  const righe = txt.split('\n').map(r => r.trim()).filter(Boolean).map(r => {
+    // Tolleranza formato: "km ALL/Scin DX/SX ..." → "km DX/SX ALL/Scin ..."
+    const m = r.match(/^(\d+\+\d+)\s+(ALL(?:UMINOTERMICA)?|SCIN(?:TILLIO)?)\s+(DX|SX)\b(.*)$/i);
+    return m ? `${m[1]} ${m[3]} ${m[2]}${m[4] || ''}` : r;
+  });
   const out = [];
   let data = '', linea = '', tratta = '', binario = '', strumento = '';
   let operatoreDX = '', operatoreSX = '', operatoreGen = '';
