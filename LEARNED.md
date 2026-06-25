@@ -25,3 +25,9 @@
 - Angolo "nudo" su una riga (es. la sola `70`) è IGNORATO (regex `^\d{1,3}$` in isIgnorable lo intercetta prima) → non imposta sonda. Limite condiviso con Diagnostica, non un bug
 - La Sede Tecnica viene salvata in minuscolo (es. "lembo esterno") come in Diagnostica
 - localStorage M2 Tool: `m2_firme` = firme salvate (MAI cancellare in test), `m2_last_input` = ultima lista incollata, `m2d.headlamp` = impostazione
+
+## Auto-aggiornamento app (25/06/2026) — REGOLA DI DEPLOY
+- M2 Tool ha uno script nell'`<head>` che all'avvio legge `version.txt` (fetch `no-store`) e, se diversa dalla costante `LOCAL` embeddata, ricarica una volta con cache-busting (`?_v=`, guard anti-loop). Serve a far prendere SEMPRE l'ultima versione su mobile (Android/iOS) senza refresh manuale, dato che M2 Tool NON usa service worker (li rimuove).
+- ⚠️ **AD OGNI DEPLOY che cambia `index.html`: bumpare la costante `LOCAL` in `index.html` E il contenuto di `version.txt` allo STESSO nuovo valore** (es. `2026.06.25-3`). Se restano diversi → reload extra ad ogni apertura (non rotto, ma fastidioso). Se non li bumpo → i client non si accorgono dell'aggiornamento.
+- Il guard `?_v=` garantisce MAX 1 reload per apertura anche in caso di mismatch → niente loop infinito.
+- Un client che ha in cache una versione PRIMA di questo meccanismo (senza lo script) NON si auto-aggiorna la prima volta: deve aprire una volta con cache-busting (`?qualcosa`) o svuotare la cache; da lì in poi è automatico.

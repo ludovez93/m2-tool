@@ -22,6 +22,9 @@
 - Fix: blur colorize ritardato 200ms per evitare che il primo tap su Elabora venisse perso
 - Aggiunto bottone "Elabora lista" sopra l'editor per accesso rapido
 
+- **25/06: AUTO-AGGIORNAMENTO app (fix cache mobile, collega Android).** Aggiunto script nell'`<head>` che legge `version.txt` (no-store) e ricarica una volta con cache-busting se la versione locale è vecchia (guard `?_v=` anti-loop). Nuovo file `version.txt`. Commit `3fc5448` su `main`. Collaudato dal vivo: versione vecchia→ricarica, versione attuale→no reload. **REGOLA: ad ogni deploy che cambia index.html, bumpare `LOCAL` in index.html + `version.txt` allo stesso valore (ora `2026.06.25-2`).** Vedi LEARNED.
+
 ## Prossimo step
-- (Opzionale) prova su iPhone in campo con una lista-notte vera, per conferma finale sul dispositivo reale.
-- Allineamento parser COMPLETO e live: niente di pendente lato compilazione difetti/NO DAC.
+- (Opzionale) prova in campo con lista-notte vera dal cellulare.
+- Allineamento parser COMPLETO e live; auto-aggiornamento attivo. Niente di pendente.
+- Promemoria deploy: bumpare `LOCAL` (index.html) + `version.txt` insieme ad ogni modifica.
