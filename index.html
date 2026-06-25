@@ -2,6 +2,26 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
+<!-- Auto-aggiornamento: se è uscita una versione nuova, ricarica forzando il bypass della cache.
+     AD OGNI DEPLOY: aggiornare LOCAL qui sotto E il contenuto di version.txt allo STESSO valore. -->
+<script>
+(function(){
+  if(location.protocol==='file:')return;
+  var LOCAL='2026.06.25-2';
+  try{
+    fetch('version.txt?_='+Date.now(),{cache:'no-store'})
+      .then(function(r){return r.ok?r.text():null;})
+      .then(function(t){
+        if(t==null)return;
+        t=t.trim();
+        if(t && t!==LOCAL && location.search.indexOf('_v=')<0){
+          location.replace(location.pathname+'?_v='+encodeURIComponent(t));
+        }
+      })
+      .catch(function(){});
+  }catch(e){}
+})();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
